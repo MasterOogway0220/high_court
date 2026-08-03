@@ -111,7 +111,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
           </Select>
 
           <div className="flex gap-2">
-            <button type="submit" className="h-10 flex-1 rounded bg-ink-900 px-4 text-sm font-medium text-white hover:bg-ink-800">
+            <button type="submit" className="h-10 flex-1 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">
               Apply
             </button>
             <Link href="/directory" className="flex h-10 items-center rounded border border-paper-edge px-3 text-sm text-ink-600 hover:bg-paper-sunk">
@@ -133,7 +133,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
             <Link
               key={label}
               href={{ pathname: '/directory', query: { ...sp, view: v || undefined } }}
-              className={`rounded px-2.5 py-1 text-xs ${(sp.view ?? '') === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-paper-sunk'}`}
+              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-brand-600 text-white' : 'text-ink-500 hover:bg-paper-sunk'}`}
             >
               {label}
             </Link>
@@ -179,7 +179,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-paper">
                   <td className="px-4 py-2.5">
-                    <Link href={`/directory/${m.id}`} className="flex items-center gap-2.5 font-medium text-ink-900 hover:text-rule">
+                    <Link href={`/directory/${m.id}`} className="flex items-center gap-2.5 font-medium text-ink-900 hover:text-brand-600">
                       <Avatar name={m.full_name} url={m.photo_url} size={8} />
                       {m.full_name}
                     </Link>
@@ -197,7 +197,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
                     </div>
                   </td>
                   <td className="px-4 py-2.5">
-                    <Badge tone={['active', 'life'].includes(m.membership_status) ? 'green' : 'amber'}>
+                    <Badge tone={['active', 'life'].includes(m.membership_status) ? 'success' : 'warn'}>
                       {m.membership_status}
                     </Badge>
                   </td>
@@ -219,7 +219,7 @@ export function Avatar({ name, url, size = 11 }: { name: string; url?: string | 
   ) : (
     <span
       aria-hidden
-      className="flex shrink-0 items-center justify-center rounded-full bg-ink-100 font-display text-ink-600"
+      className="flex shrink-0 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-700"
       style={{ width: `${size * 4}px`, height: `${size * 4}px`, fontSize: `${size * 1.4}px` }}
     >
       {initials}

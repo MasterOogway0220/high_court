@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/ui'
+import { signOut } from '../(auth)/login/actions'
 import {
   LayoutDashboard,
   Users,
@@ -14,38 +15,25 @@ import {
   Landmark,
   Mail,
   ShieldCheck,
+  Settings,
+  LogOut,
+  Scale,
 } from 'lucide-react'
 
-// Grouped the way a file is indexed: what is happening now, what is on record,
-// and who the Association is. The grouping carries meaning, so it earns its rules.
-const GROUPS: { label: string; items: { href: string; label: string; icon: typeof Users }[] }[] = [
-  {
-    label: 'Current',
-    items: [
-      { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/announcements', label: 'Announcements', icon: Megaphone },
-      { href: '/calendar', label: 'Calendar', icon: CalendarDays },
-      { href: '/events', label: 'Events', icon: CalendarCheck },
-    ],
-  },
-  {
-    label: 'Records',
-    items: [
-      { href: '/directory', label: 'Directory', icon: Users },
-      { href: '/documents', label: 'Documents', icon: FolderOpen },
-      { href: '/newsletter', label: 'Newsletter', icon: BookOpen },
-    ],
-  },
-  {
-    label: 'Association',
-    items: [
-      { href: '/committee', label: 'Bar Committee', icon: Landmark },
-      { href: '/contact', label: 'Contact', icon: Mail },
-    ],
-  },
+type Item = { href: string; label: string; icon: typeof Users }
+
+const MENU: Item[] = [
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/announcements', label: 'Announcements', icon: Megaphone },
+  { href: '/calendar', label: 'Calendar', icon: CalendarDays },
+  { href: '/events', label: 'Events', icon: CalendarCheck },
+  { href: '/directory', label: 'Directory', icon: Users },
+  { href: '/documents', label: 'Documents', icon: FolderOpen },
+  { href: '/newsletter', label: 'Newsletter', icon: BookOpen },
+  { href: '/committee', label: 'Bar Committee', icon: Landmark },
 ]
 
-const MOBILE = [
+const MOBILE: Item[] = [
   { href: '/', label: 'Home', icon: LayoutDashboard },
   { href: '/announcements', label: 'Notices', icon: Megaphone },
   { href: '/directory', label: 'Directory', icon: Users },
@@ -53,52 +41,87 @@ const MOBILE = [
   { href: '/documents', label: 'Files', icon: FolderOpen },
 ]
 
-export function Nav({ canPublish, isStaff }: { canPublish: boolean; isStaff: boolean }) {
+export function Nav({
+  canPublish,
+  isStaff,
+  unread,
+  demo,
+}: {
+  canPublish: boolean
+  isStaff: boolean
+  unread: number
+  demo: boolean
+}) {
   const path = usePathname()
   const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href))
 
-  const item = (href: string, label: string, Icon: typeof Users) => (
-    <li key={href}>
-      <Link
-        href={href}
-        aria-current={active(href) ? 'page' : undefined}
-        className={cn(
-          'group relative flex items-center gap-2.5 py-1.5 pl-3 text-[13.5px] transition-colors',
-          active(href) ? 'font-medium text-ink-900' : 'text-ink-500 hover:text-ink-900'
-        )}
-      >
-        {/* the current entry is marked in the margin, as a file is */}
-        <span
+  const item = ({ href, label, icon: Icon }: Item, count?: number) => {
+    const on = active(href)
+    return (
+      <li key={href}>
+        <Link
+          href={href}
+          aria-current={on ? 'page' : undefined}
           className={cn(
-            'absolute top-1/2 left-0 h-4 w-[2px] -translate-y-1/2 transition-colors',
-            active(href) ? 'bg-rule' : 'bg-transparent group-hover:bg-ink-200'
+            'group relative flex h-9.5 items-center gap-3 rounded-lg px-2 text-[13.5px] transition-colors',
+            on ? 'font-semibold text-ink-900' : 'text-ink-500 hover:bg-paper-sunk hover:text-ink-900'
           )}
-        />
-        <Icon size={15} className={active(href) ? 'text-rule' : 'text-ink-300'} />
-        {label}
-      </Link>
-    </li>
-  )
+        >
+          {/* the current section is marked in the panel margin */}
+          {on && (
+            <span className="absolute top-1/2 -left-5 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-400" />
+          )}
+          <Icon size={17} className={on ? 'text-ink-900' : 'text-ink-400'} />
+          <span className="truncate">{label}</span>
+          {!!count && (
+            <span className="ml-auto rounded-md bg-brand-400 px-1.5 py-0.5 text-[10px] font-bold text-ink-900 tabular-nums">
+              {count > 99 ? '99+' : count}
+            </span>
+          )}
+        </Link>
+      </li>
+    )
+  }
 
   return (
     <>
-      <nav aria-label="Sections" className="hidden w-48 shrink-0 lg:block">
-        <div className="sticky top-22 space-y-6">
-          {GROUPS.map((g) => (
-            <div key={g.label}>
-              <p className="eyebrow ruled mb-2 pb-1.5">{g.label}</p>
-              <ul>{g.items.map((i) => item(i.href, i.label, i.icon))}</ul>
-            </div>
-          ))}
+      <aside
+        aria-label="Sections"
+        className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-r border-paper-edge px-5 py-6 lg:flex"
+      >
+        <Link href="/" className="mb-8 flex items-center gap-2.5 px-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
+            <Scale size={18} />
+          </span>
+          <span className="leading-none">
+            <span className="block text-[17px] font-extrabold tracking-tight text-ink-900">GHCBA</span>
+            <span className="mt-1 block text-[10px] font-medium text-ink-400">Bar Association</span>
+          </span>
+        </Link>
 
-          {(canPublish || isStaff) && (
-            <div>
-              <p className="eyebrow ruled mb-2 pb-1.5">Office</p>
-              <ul>{item('/admin', 'Administration', ShieldCheck)}</ul>
-            </div>
+        <p className="eyebrow mb-2 px-2">Menu</p>
+        <ul className="space-y-0.5">
+          {MENU.map((i) => item(i, i.href === '/announcements' ? unread : undefined))}
+        </ul>
+
+        <p className="eyebrow mt-7 mb-2 px-2">General</p>
+        <ul className="space-y-0.5">
+          {(canPublish || isStaff) &&
+            item({ href: '/admin', label: 'Administration', icon: ShieldCheck })}
+          {item({ href: '/settings', label: 'Settings', icon: Settings })}
+          {item({ href: '/contact', label: 'Help', icon: Mail })}
+          {!demo && (
+            <li>
+              <form action={signOut}>
+                <button className="flex h-9.5 w-full items-center gap-3 rounded-lg px-2 text-[13.5px] text-ink-500 transition-colors hover:bg-paper-sunk hover:text-ink-900">
+                  <LogOut size={17} className="text-ink-400" />
+                  Logout
+                </button>
+              </form>
+            </li>
           )}
-        </div>
-      </nav>
+        </ul>
+      </aside>
 
       <nav
         aria-label="Sections"
@@ -111,11 +134,11 @@ export function Nav({ canPublish, isStaff }: { canPublish: boolean; isStaff: boo
                 href={href}
                 aria-current={active(href) ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center gap-1 py-2.5 font-mono text-[9.5px] tracking-wide uppercase',
-                  active(href) ? 'text-rule' : 'text-ink-400'
+                  'flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold',
+                  active(href) ? 'text-brand-600' : 'text-ink-400'
                 )}
               >
-                <Icon size={17} />
+                <Icon size={18} />
                 {label}
               </Link>
             </li>

@@ -92,7 +92,7 @@ export default async function CalendarPage({
               <option key={v} value={v}>{l}</option>
             ))}
           </select>
-          <button className="h-8 rounded bg-ink-900 px-3 text-xs font-medium text-white">Filter</button>
+          <button className="h-9 rounded-lg bg-brand-600 px-4 text-[12.5px] font-semibold text-white hover:bg-brand-700">Filter</button>
         </form>
 
         <div className="flex gap-1 rounded border border-paper-edge p-0.5">
@@ -100,7 +100,7 @@ export default async function CalendarPage({
             <Link
               key={label}
               href={{ query: { ...sp, view: v || undefined } }}
-              className={`rounded px-2.5 py-1 text-xs ${(sp.view ?? '') === v ? 'bg-ink-900 text-white' : 'text-ink-600'}`}
+              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-brand-600 text-white' : 'text-ink-500 hover:bg-paper-sunk'}`}
             >
               {label}
             </Link>
@@ -130,7 +130,7 @@ export default async function CalendarPage({
                 >
                   <span
                     className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                      today ? 'bg-rule font-medium text-white' : inMonth ? 'text-ink-600' : 'text-ink-200'
+                      today ? 'bg-brand-600 font-semibold text-white' : inMonth ? 'text-ink-600' : 'text-ink-200'
                     }`}
                   >
                     {format(d, 'd')}
@@ -173,7 +173,7 @@ export default async function CalendarPage({
                       </span>
                     </div>
                     {e.event_id ? (
-                      <Link href={`/events/${e.event_id}`} className="text-sm text-ink-900 hover:text-rule">
+                      <Link href={`/events/${e.event_id}`} className="text-sm text-ink-900 hover:text-brand-600">
                         {e.title}
                       </Link>
                     ) : (

@@ -28,15 +28,15 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/committee" className="mb-4 inline-block text-sm text-rule hover:underline">
+      <Link href="/committee" className="mb-4 inline-block text-sm text-brand-600 hover:underline">
         ← Bar Committee
       </Link>
 
       <Card className="p-6">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="navy">{(c.committee_terms as any)?.label}</Badge>
+          <Badge tone="info">{(c.committee_terms as any)?.label}</Badge>
           <Badge>{c.kind === 'sub' ? 'Sub-committee' : 'Standing committee'}</Badge>
-          {!(c.committee_terms as any)?.is_current && <Badge tone="amber">Archived</Badge>}
+          {!(c.committee_terms as any)?.is_current && <Badge tone="warn">Archived</Badge>}
         </div>
         <h1 className="mt-3 font-display text-2xl text-ink-900">{c.name}</h1>
         {c.mandate && (
@@ -60,7 +60,7 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
                   <Avatar name={p.members.full_name} url={p.members.photo_url} size={10} />
                   <div className="min-w-0">
                     <p className="truncate text-sm text-ink-900">{p.members.full_name}</p>
-                    <p className="text-xs text-rule">{p.designation}</p>
+                    <p className="text-xs text-brand-600">{p.designation}</p>
                   </div>
                 </Link>
               </li>

@@ -1,91 +1,95 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { me, db } from '@/lib/supabase/server'
-import { signOut } from '../(auth)/login/actions'
 import { Nav } from './nav'
 import { GlobalSearch } from './search'
-import { Bell } from 'lucide-react'
+import { Bell, Mail } from 'lucide-react'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const member = await me()
   if (!member) redirect('/login')
 
   const supabase = await db()
-  const { count: unreadNotifs } = await supabase
-    .from('notifications')
-    .select('id', { count: 'exact', head: true })
-    .is('read_at', null)
+  const [{ count: unreadNotifs }, { data: unreadNotices }] = await Promise.all([
+    supabase.from('notifications').select('id', { count: 'exact', head: true }).is('read_at', null),
+    supabase.rpc('unread_count'),
+  ])
 
   const demo = !!process.env.DEMO_AUTO_LOGIN
+  const initials = member.full_name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join('')
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      {/* The file cover: dark board, the association's name set as a title page. */}
-      <header className="sticky top-0 z-40 border-b border-rule/60 bg-ink-900">
-        <div className="mx-auto flex h-15 max-w-[1440px] items-center gap-4 px-4 sm:px-6">
-          <Link href="/" className="flex shrink-0 items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-white/25 font-display text-[13px] text-white">
+    <div className="flex min-h-dvh w-full bg-paper-raised">
+      <Nav
+        canPublish={member.canPublish || demo}
+        isStaff={member.isStaff || demo}
+        unread={unreadNotices ?? 0}
+        demo={demo}
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-19 items-center gap-3 bg-paper-raised px-4 sm:px-6">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5 lg:hidden">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-[13px] font-extrabold text-white">
               GH
-            </span>
-            <span className="hidden leading-none sm:block">
-              <span className="block font-display text-[15px] tracking-tight text-white">
-                Guwahati High Court
-              </span>
-              <span className="mt-1 block font-mono text-[9.5px] tracking-[0.18em] text-white/45 uppercase">
-                Bar Association
-              </span>
             </span>
           </Link>
 
-          <div className="mx-auto w-full max-w-lg">
+          <div className="min-w-0 flex-1 sm:max-w-md">
             <GlobalSearch />
           </div>
 
-          <Link
-            href="/notifications"
-            aria-label={`Notifications${unreadNotifs ? `, ${unreadNotifs} unread` : ''}`}
-            className="relative rounded-[3px] p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <Bell size={17} />
-            {!!unreadNotifs && (
-              <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-[2px] bg-rule px-1 font-mono text-[9px] font-medium text-white">
-                {unreadNotifs > 9 ? '9+' : unreadNotifs}
+          <div className="ml-auto flex items-center gap-2.5">
+            <Link
+              href="/contact"
+              aria-label="Contact the office"
+              className="hidden h-10 w-10 items-center justify-center rounded-full border border-paper-edge text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600 sm:flex"
+            >
+              <Mail size={17} />
+            </Link>
+
+            <Link
+              href="/notifications"
+              aria-label={`Notifications${unreadNotifs ? `, ${unreadNotifs} unread` : ''}`}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-paper-edge text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600"
+            >
+              <Bell size={17} />
+              {!!unreadNotifs && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-brand-400 px-1 text-[9.5px] font-bold text-ink-900 tabular-nums">
+                  {unreadNotifs > 9 ? '9+' : unreadNotifs}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/settings"
+              className="flex items-center gap-2.5 rounded-full pl-1 transition-opacity hover:opacity-80"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-[12.5px] font-bold text-brand-700 uppercase">
+                {initials}
               </span>
-            )}
-          </Link>
-
-          <div className="hidden items-center gap-3 border-l border-white/15 pl-4 md:flex">
-            <div className="text-right leading-tight">
-              <div className="text-[13px] font-medium text-white">{member.full_name}</div>
-              <div className="font-mono text-[10.5px] text-white/45">{member.enrolment_no}</div>
-            </div>
-            {!demo && (
-              <form action={signOut}>
-                <button className="rounded-[3px] px-2 py-1 font-mono text-[10.5px] tracking-wide text-white/50 uppercase transition-colors hover:bg-white/10 hover:text-white">
-                  Sign out
-                </button>
-              </form>
-            )}
+              <span className="hidden leading-tight md:block">
+                <span className="block text-[13px] font-semibold text-ink-900">
+                  {member.full_name}
+                </span>
+                <span className="block text-[11.5px] text-ink-400">
+                  {member.email ?? member.enrolment_no}
+                </span>
+              </span>
+            </Link>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="mx-auto flex w-full max-w-[1440px] flex-1 gap-7 px-4 py-7 sm:px-6">
-        <Nav canPublish={member.canPublish || demo} isStaff={member.isStaff || demo} />
-        {/* The signature: filed pleading paper, ruled down the left margin. */}
-        <main className="margin-rule enter min-w-0 flex-1 pb-24 lg:pb-10">{children}</main>
+        {/* The canvas: cards sit on this, never directly on the shell. */}
+        <main className="enter min-w-0 flex-1 border-t border-paper-edge bg-paper px-4 pt-6 pb-24 sm:px-6 lg:pb-10">
+          {children}
+        </main>
       </div>
-
-      <footer className="border-t border-paper-edge bg-paper-sunk">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-2 px-4 py-5 sm:px-6">
-          <p className="font-display text-[12.5px] text-ink-600">
-            Guwahati High Court Bar Association
-          </p>
-          <p className="font-mono text-[10.5px] tracking-wide text-ink-400 uppercase">
-            Gauhati High Court · Guwahati 781001 · Assam
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

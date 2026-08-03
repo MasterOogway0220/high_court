@@ -76,13 +76,16 @@ export default async function SettingsPage() {
   const enabled = (c: string) => prefs?.find((p) => p.category === c)?.email_enabled ?? true
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <>
       <Heading sub="Your profile, privacy and notification preferences.">Settings</Heading>
 
-      <form action={saveProfile} className="space-y-4">
+      {/* Two tracks: what you edit on the left, what the account exposes on the right.
+          The calendar feed keeps its own form, so it cannot sit inside this one. */}
+      <div className="grid items-start gap-3.5 xl:grid-cols-3">
+      <form action={saveProfile} className="space-y-3.5 xl:col-span-2">
         <Card className="p-6">
           <h2 className="mb-4 text-[15px] text-ink-900">Profile</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             <Field label="Full name" hint="Changes require approval by the Association office.">
               <Input name="full_name" defaultValue={member.full_name} />
             </Field>
@@ -95,17 +98,17 @@ export default async function SettingsPage() {
             <Field label="Chamber phone">
               <Input name="chamber_phone" defaultValue={member.chamber_phone ?? ''} />
             </Field>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 2xl:col-span-3">
               <Field label="Chamber address">
                 <Input name="chamber_address" defaultValue={member.chamber_address ?? ''} />
               </Field>
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 2xl:col-span-3">
               <Field label="Practice areas" hint="Separate with commas.">
                 <Input name="practice_areas" defaultValue={(member.practice_areas as string[])?.join(', ')} />
               </Field>
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 2xl:col-span-3">
               <Field label="Short bio" hint="Up to 500 characters.">
                 <Textarea name="bio" rows={4} maxLength={500} defaultValue={member.bio ?? ''} />
               </Field>
@@ -113,6 +116,7 @@ export default async function SettingsPage() {
           </div>
         </Card>
 
+        <div className="grid gap-3.5 md:grid-cols-2">
         <Card className="p-6">
           <h2 className="mb-1 text-[15px] text-ink-900">Privacy</h2>
           <p className="mb-4 text-sm text-ink-400">
@@ -120,11 +124,11 @@ export default async function SettingsPage() {
           </p>
           <div className="space-y-3">
             <label className="flex items-center gap-2.5 text-sm text-ink-700">
-              <input type="checkbox" name="hide_mobile" defaultChecked={member.hide_mobile} className="accent-rule" />
+              <input type="checkbox" name="hide_mobile" defaultChecked={member.hide_mobile} className="accent-brand-600" />
               Hide my mobile number from other members
             </label>
             <label className="flex items-center gap-2.5 text-sm text-ink-700">
-              <input type="checkbox" name="hide_email" defaultChecked={member.hide_email} className="accent-rule" />
+              <input type="checkbox" name="hide_email" defaultChecked={member.hide_email} className="accent-brand-600" />
               Hide my email address from other members
             </label>
           </div>
@@ -143,26 +147,27 @@ export default async function SettingsPage() {
                   name={`pref_${v}`}
                   defaultChecked={v === 'urgent' ? true : enabled(v)}
                   disabled={v === 'urgent'}
-                  className="accent-rule disabled:opacity-50"
+                  className="accent-brand-600 disabled:opacity-50"
                 />
                 {l}
-                {v === 'urgent' && <Badge tone="maroon">Always on</Badge>}
+                {v === 'urgent' && <Badge tone="alert">Always on</Badge>}
               </label>
             ))}
           </div>
         </Card>
+        </div>
 
         <Button type="submit">Save changes</Button>
       </form>
 
-      <Card className="mt-4 p-6">
+      <Card className="p-6">
         <h2 className="mb-1 text-[15px] text-ink-900">Calendar subscription</h2>
         <p className="mb-4 text-sm text-ink-400">
           A private feed of your association calendar for Google or Outlook. Anyone with this link can read your
           calendar — rotate it if it is ever shared by accident.
         </p>
         {token ? (
-          <code className="block overflow-x-auto rounded border border-paper-edge bg-paper px-3 py-2 text-xs text-ink-600">
+          <code className="block overflow-x-auto rounded-lg border border-paper-edge bg-paper px-3 py-2 text-xs break-all text-ink-600">
             /api/ics/{token.token}
           </code>
         ) : (
@@ -174,6 +179,7 @@ export default async function SettingsPage() {
           </Button>
         </form>
       </Card>
-    </div>
+      </div>
+    </>
   )
 }

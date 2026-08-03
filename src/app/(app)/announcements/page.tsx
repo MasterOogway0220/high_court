@@ -64,10 +64,10 @@ export default async function AnnouncementsPage({
           <Input name="from" type="date" defaultValue={sp.from} aria-label="Published from" />
           <Input name="to" type="date" defaultValue={sp.to} aria-label="Published to" />
           <div className="flex items-center gap-3 sm:col-span-2 lg:col-span-5">
-            <button className="h-9 rounded bg-ink-900 px-4 text-sm font-medium text-white hover:bg-ink-800">Filter</button>
+            <button className="h-10 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">Filter</button>
             <Link href="/announcements" className="text-sm text-ink-500 hover:underline">Clear</Link>
             <label className="ml-auto flex items-center gap-2 text-sm text-ink-600">
-              <input type="checkbox" name="archive" value="1" defaultChecked={!!sp.archive} className="accent-rule" />
+              <input type="checkbox" name="archive" value="1" defaultChecked={!!sp.archive} className="accent-brand-600" />
               Include expired (archive)
             </label>
           </div>
@@ -92,7 +92,7 @@ export default async function AnnouncementsPage({
                       condolence
                         ? 'border-l-2 border-l-ink-300 bg-paper'
                         : a.priority === 'urgent'
-                          ? 'border-l-2 border-l-rule'
+                          ? 'border-l-2 border-l-brand-600'
                           : a.priority === 'important'
                             ? 'border-l-2 border-l-amber-500'
                             : ''
@@ -100,17 +100,17 @@ export default async function AnnouncementsPage({
                   >
                     <div className="mb-2 flex flex-wrap items-center gap-1.5">
                       {a.pinned && (
-                        <span className="flex items-center gap-1 text-[11px] font-medium text-rule">
+                        <span className="flex items-center gap-1 text-[11px] font-medium text-brand-600">
                           <Pin size={11} /> Pinned
                         </span>
                       )}
-                      <Badge tone={condolence ? 'neutral' : 'navy'}>{CATEGORY[a.category]}</Badge>
+                      <Badge tone={condolence ? 'neutral' : 'info'}>{CATEGORY[a.category]}</Badge>
                       {a.priority !== 'normal' && !condolence && (
-                        <Badge tone={a.priority === 'urgent' ? 'maroon' : 'amber'}>{a.priority}</Badge>
+                        <Badge tone={a.priority === 'urgent' ? 'alert' : 'warn'}>{a.priority}</Badge>
                       )}
-                      {a.visibility !== 'all_members' && <Badge tone="amber">{VISIBILITY[a.visibility]}</Badge>}
+                      {a.visibility !== 'all_members' && <Badge tone="warn">{VISIBILITY[a.visibility]}</Badge>}
                       {expired && <Badge>Expired</Badge>}
-                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-rule" aria-label="Unread" />}
+                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-brand-600" aria-label="Unread" />}
                     </div>
 
                     <h2

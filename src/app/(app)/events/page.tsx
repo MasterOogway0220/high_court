@@ -51,7 +51,7 @@ export default async function EventsPage({
             href={v ? `/events?tab=${v}` : '/events'}
             className={`-mb-px border-b-2 px-4 py-2 text-sm ${
               (tab ?? '') === v
-                ? 'border-rule font-medium text-ink-900'
+                ? 'border-brand-600 font-semibold text-ink-900'
                 : 'border-transparent text-ink-400 hover:text-ink-700'
             }`}
           >
@@ -71,14 +71,14 @@ export default async function EventsPage({
 
             return (
               <Link key={e.id} href={`/events/${e.id}`}>
-                <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-ink-200">
-                  <div className="flex h-24 items-end bg-ink-900 p-4">
-                    <Badge tone="navy" className="border-white/20 bg-white/10 text-white">
+                <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-brand-200">
+                  <div className="board flex h-24 items-end p-4">
+                    <Badge tone="info" className="bg-white/15 text-white">
                       {EVENT_TYPE[e.event_type]}
                     </Badge>
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    <p className="text-xs font-medium tracking-wide text-rule uppercase">
+                    <p className="text-[11.5px] font-semibold text-brand-600">
                       {day(e.starts_at)} · {time(e.starts_at)}
                     </p>
                     <h2 className="mt-1.5 text-[15px] leading-snug text-ink-900">{e.title}</h2>

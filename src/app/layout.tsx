@@ -1,29 +1,13 @@
 import type { Metadata } from 'next'
-import { Spectral, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 
-// Spectral for display: a documentary serif with flared, slightly severe serifs —
-// formal without the high-contrast fashion serif look that any brief would get.
-const display = Spectral({
-  variable: '--font-spectral',
+// One family for everything, as the reference does: Plus Jakarta Sans carries the
+// wordmark at 800, headings at 700, labels at 600 and body at 400/500.
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  display: 'swap',
-})
-
-// Plex Sans and Plex Mono as a matched pair: an institutional records system reads
-// as one family, and the mono carries every number that identifies a record.
-const sans = IBM_Plex_Sans({
-  variable: '--font-plex-sans',
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  display: 'swap',
-})
-
-const mono = IBM_Plex_Mono({
-  variable: '--font-plex-mono',
-  subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
@@ -37,10 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${jakarta.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   )

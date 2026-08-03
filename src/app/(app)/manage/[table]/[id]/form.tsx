@@ -60,7 +60,7 @@ export function RecordForm({
                       type="checkbox"
                       name={f.name}
                       defaultChecked={row[f.name] === true}
-                      className="accent-rule"
+                      className="accent-brand-600"
                     />
                     {f.label}
                   </label>
@@ -109,7 +109,7 @@ export function RecordForm({
         {error && (
           <p
             role="alert"
-            className="rounded-[3px] border border-rule-soft bg-rule-wash px-3 py-2 text-[13px] text-rule"
+            className="rounded-xl bg-alert-wash px-3.5 py-2.5 text-[12.5px] font-medium text-alert"
           >
             {error}
           </p>
@@ -126,7 +126,7 @@ export function RecordForm({
       {!isNew && (
         <form
           action={deleteRecord.bind(null, spec.table, id)}
-          className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule-soft bg-rule-wash px-4 py-3"
+          className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-alert-wash bg-alert-wash px-4 py-3"
         >
           <p className="text-[12.5px] text-ink-600">
             {spec.softDelete

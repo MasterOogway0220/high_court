@@ -40,7 +40,7 @@ export default async function ManagePage({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href={spec.back} className="mb-5 inline-block font-mono text-[11px] text-rule hover:underline">
+      <Link href={spec.back} className="mb-5 inline-block font-mono text-[11px] text-brand-600 hover:underline">
         ← {spec.plural}
       </Link>
 

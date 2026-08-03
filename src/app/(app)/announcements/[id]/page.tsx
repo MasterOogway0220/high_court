@@ -33,13 +33,13 @@ export default async function AnnouncementPage({ params }: { params: Promise<{ i
   return (
     <article className="mx-auto max-w-3xl">
       <div className="mb-5 flex items-center justify-between gap-3">
-        <Link href="/announcements" className="font-mono text-[11px] text-rule hover:underline">
+        <Link href="/announcements" className="font-mono text-[11px] text-brand-600 hover:underline">
           ← Announcements
         </Link>
         {viewer.canPublish && (
           <Link
             href={`/manage/announcements/${a.id}`}
-            className="font-mono text-[11px] text-ink-500 hover:text-rule hover:underline"
+            className="font-mono text-[11px] text-ink-500 hover:text-brand-600 hover:underline"
           >
             Edit notice
           </Link>
@@ -49,15 +49,15 @@ export default async function AnnouncementPage({ params }: { params: Promise<{ i
       <Card className={`p-7 sm:p-9 ${condolence ? 'bg-paper' : ''}`}>
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {a.pinned && (
-            <span className="flex items-center gap-1 text-[11px] font-medium text-rule">
+            <span className="flex items-center gap-1 text-[11px] font-medium text-brand-600">
               <Pin size={11} /> Pinned
             </span>
           )}
-          <Badge tone={condolence ? 'neutral' : 'navy'}>{CATEGORY[a.category]}</Badge>
+          <Badge tone={condolence ? 'neutral' : 'info'}>{CATEGORY[a.category]}</Badge>
           {a.priority !== 'normal' && !condolence && (
-            <Badge tone={a.priority === 'urgent' ? 'maroon' : 'amber'}>{a.priority}</Badge>
+            <Badge tone={a.priority === 'urgent' ? 'alert' : 'warn'}>{a.priority}</Badge>
           )}
-          {a.visibility !== 'all_members' && <Badge tone="amber">{VISIBILITY[a.visibility]}</Badge>}
+          {a.visibility !== 'all_members' && <Badge tone="warn">{VISIBILITY[a.visibility]}</Badge>}
         </div>
 
         <h1

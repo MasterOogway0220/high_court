@@ -36,7 +36,7 @@ export default async function ContactPage({
     ).data?.id ?? 0)
     .order('sort')
 
-  const tone = (s: string) => (s === 'resolved' ? 'green' : s === 'in_progress' ? 'amber' : 'navy')
+  const tone = (s: string) => (s === 'resolved' ? 'success' : s === 'in_progress' ? 'warn' : 'info')
 
   return (
     <>
@@ -83,11 +83,11 @@ export default async function ContactPage({
               </li>
               <li className="flex gap-2.5">
                 <Phone size={15} className="mt-0.5 shrink-0 text-ink-300" />
-                <a href="tel:+913612601234" className="hover:text-rule">+91 361 260 1234</a>
+                <a href="tel:+913612601234" className="hover:text-brand-600">+91 361 260 1234</a>
               </li>
               <li className="flex gap-2.5">
                 <Mail size={15} className="mt-0.5 shrink-0 text-ink-300" />
-                <a href="mailto:office@ghcba.in" className="hover:text-rule">office@ghcba.in</a>
+                <a href="mailto:office@ghcba.in" className="hover:text-brand-600">office@ghcba.in</a>
               </li>
               <li className="flex gap-2.5">
                 <Clock size={15} className="mt-0.5 shrink-0 text-ink-300" />
@@ -105,10 +105,10 @@ export default async function ContactPage({
               <ul className="space-y-3">
                 {bearers.map((b: any) => (
                   <li key={b.members.id}>
-                    <p className="text-[11px] font-medium tracking-wide text-rule uppercase">{b.designation}</p>
+                    <p className="text-[11.5px] font-semibold text-brand-600">{b.designation}</p>
                     <p className="text-sm text-ink-800">{b.members.full_name}</p>
                     {!b.members.hide_mobile && (
-                      <a href={`tel:${b.members.mobile}`} className="text-xs text-ink-400 hover:text-rule">
+                      <a href={`tel:${b.members.mobile}`} className="text-xs text-ink-400 hover:text-brand-600">
                         {b.members.mobile}
                       </a>
                     )}

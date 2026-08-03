@@ -37,7 +37,7 @@ export function LoginForm({ next }: { next: string }) {
       </Field>
 
       {error && (
-        <p role="alert" className="rounded border border-rule-soft bg-rule-wash px-3 py-2 text-[13px] text-rule">
+        <p role="alert" className="rounded-xl bg-alert-wash px-3.5 py-2.5 text-[12.5px] font-medium text-alert">
           {error}
         </p>
       )}

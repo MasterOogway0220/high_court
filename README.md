@@ -54,6 +54,7 @@ see [Deviations](#deviations-from-the-prd).
    003_functions.sql  login resolution, RSVP/waitlist, global search
    004_seed.sql       demo members, notices, events, documents
    005_check.sql      asserts the visibility rules actually hold
+   006_document_files.sql  the private document bucket and its storage policies
    ```
 
    `005` raises an exception if a general member can see restricted content. A clean run
@@ -156,10 +157,14 @@ SSR guides still show the old filename, which silently never runs.
 | Appwrite (considered) | Supabase | Appwrite Cloud has no India region; §4.4 requires Indian data residency. Supabase offers `ap-south-1` Mumbai |
 | OTP activation and reset via SMS | Password login only | No SMS gateway chosen yet — PRD open question 3 |
 
-**Not yet built:** file upload and in-browser preview (documents and newsletter issues are
-seeded as metadata; uploads must go browser→Supabase Storage directly, since Vercel caps
-request bodies at ~4.5 MB against the PRD's 25 MB), scheduled publishing and reminder jobs
-(`pg_cron`), email notifications, admin content CRUD, CSV member import, and PDF export.
+**Not yet built:** newsletter issue files (seeded as metadata), scheduled publishing and
+reminder jobs (`pg_cron`), email notifications, CSV member import, and PDF export.
+
+Document upload is built. The browser uploads straight to Supabase Storage rather than
+posting through Next.js, because Vercel caps a request body at ~4.5 MB and PRD 3.6 asks
+for 25 MB; the server only records the result. The bucket is private and its policies ask
+the same `sees(visibility)` question the table policies do, so a restricted file is
+refused by Storage itself, not merely hidden by the UI.
 
 ## Layout
 

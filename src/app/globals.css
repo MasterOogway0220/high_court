@@ -1,49 +1,67 @@
 @import 'tailwindcss';
 
 /*
-  GHCBA — the court file.
+  GHCBA — Donezo direction.
 
-  The design is taken from the artefact every advocate at this Bar handles daily:
-  a court file on legal pleading paper. That paper carries a double red rule down
-  the left margin, entries are numbered, and every record — enrolment number, cause
-  number, date — is set in a register hand. Those three facts drive the palette,
-  the type system and the one signature device.
+  Taken from the supplied reference exactly: a white app panel floating on a soft
+  grey page, a light canvas inside it, white hairline cards, one green as the only
+  hue, and pill-shaped controls. One sans family (Plus Jakarta Sans) does display,
+  body and data — the reference has no serif and no mono.
+*/
+/*
+  Black and yellow.
 
-  No cream. Legal bond paper is a cool grey-green, not a warm cream, and the
-  difference is the whole character of the surface.
+  The scale is deliberately discontinuous, because the two halves do different jobs:
+  yellow cannot carry text on white (#F5C518 on white is 1.7:1, nowhere near legible),
+  so it is only ever a fill, a wash or a marker. Black does every job yellow cannot —
+  buttons, body accents, links.
+
+    brand-50 … brand-500   yellow, pale wash → vivid signal. Fills and markers only.
+    brand-600, brand-700   black. Fills with white text, and any accent that is text.
 */
 @theme {
-  /* court ink — near-black with a blue cast, the colour of an official stamp */
-  --color-ink-900: #0f171e;
-  --color-ink-800: #18242e;
-  --color-ink-700: #24343f;
-  --color-ink-600: #344857;
-  --color-ink-500: #4a5f6e;
-  --color-ink-400: #6a7f8d;
-  --color-ink-300: #93a5b0;
-  --color-ink-200: #bccad2;
-  --color-ink-100: #dee6ea;
-  --color-ink-50: #eef3f5;
+  --color-brand-50: #fef9e7;
+  --color-brand-100: #fceec1;
+  --color-brand-200: #f9e39a;
+  --color-brand-300: #f4d466;
+  --color-brand-400: #f5c518; /* the signal yellow */
+  --color-brand-500: #e3b100;
+  --color-brand-600: #181818;
+  --color-brand-700: #000000;
 
-  /* legal bond paper. The page sits a shade below the sheets filed on it, so a
-     document reads as a document without needing a shadow to lift it. */
-  --color-paper: #e6e9e0;
-  --color-paper-raised: #f9faf6;
-  --color-paper-sunk: #dde1d5;
-  --color-paper-edge: #c9d0be;
+  /* neutrals, true grey so the yellow is the only hue in the room */
+  --color-ink-900: #121212;
+  --color-ink-800: #1f1f1f;
+  --color-ink-700: #333333;
+  --color-ink-600: #4d4d4d;
+  --color-ink-500: #666666;
+  --color-ink-400: #8a8a8a;
+  --color-ink-300: #ababab;
+  --color-ink-200: #cccccc;
+  --color-ink-100: #e5e5e5;
+  --color-ink-50: #f2f2f2;
 
-  /* the margin rule. Used for rules, marginalia and urgency — never as a fill. */
-  --color-rule: #a6322a;
-  --color-rule-soft: #cf8880;
-  --color-rule-wash: #f6e7e4;
+  /* surfaces, outermost to innermost */
+  --color-shell: #ededeb; /* the page behind the app shell */
+  --color-paper: #f7f7f5; /* the canvas cards sit on */
+  --color-paper-raised: #ffffff; /* a card */
+  --color-paper-sunk: #f2f2f0; /* search field, hover */
+  --color-paper-edge: #e8e8e5; /* every hairline */
 
-  /* the only other hue: a muted register green for standing/verified states */
-  --color-seal: #40614c;
-  --color-seal-wash: #e6ede7;
+  /* status. Warn is pushed to orange so it cannot be mistaken for the brand yellow. */
+  --color-info: #2f6fd0;
+  --color-info-wash: #e9f1fc;
+  --color-warn: #b45309;
+  --color-warn-wash: #fdefe3;
+  --color-alert: #dc4438;
+  --color-alert-wash: #fce9e7;
 
-  --font-display: var(--font-spectral), Georgia, serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1rem;
+  --radius-panel: 1.625rem;
 }
 
 @layer base {
@@ -51,92 +69,91 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    background: var(--color-paper);
+    background: var(--color-shell);
     color: var(--color-ink-900);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 13.5px;
     line-height: 1.55;
   }
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.012em;
+    font-weight: 700;
+    letter-spacing: -0.021em;
     line-height: 1.2;
   }
-  /* Register hand: every number that identifies a record is monospaced, because in a
-     court register it is. This is encoding, not ornament. */
+  /* Figures line up in columns — the reference sets every count and clock this way. */
   code,
   kbd,
   .record {
-    font-family: var(--font-mono);
-    font-variant-ligatures: none;
+    font-variant-numeric: tabular-nums;
   }
   :focus-visible {
-    outline: 2px solid var(--color-rule);
+    outline: 2px solid var(--color-brand-600);
     outline-offset: 2px;
-    border-radius: 1px;
+    border-radius: 6px;
   }
   ::selection {
-    background: var(--color-rule-wash);
+    background: var(--color-brand-300);
   }
   ::-webkit-scrollbar {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-ink-200);
-    border: 3px solid var(--color-paper);
-    border-radius: 6px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 8px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-ink-300);
+    background-clip: content-box;
   }
 }
 
 @layer components {
-  /*
-    THE SIGNATURE — the margin rule.
-    The double vermillion rule down the left of Indian legal pleading paper.
-    Applied once, in the app shell, so every screen sits on filed paper.
-  */
-  .margin-rule {
-    position: relative;
-    padding-left: 1.5rem;
-  }
-  .margin-rule::before {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    left: 0.375rem;
-    width: 4px;
-    border-left: 1px solid var(--color-rule);
-    border-right: 1px solid var(--color-rule);
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  @media (min-width: 1024px) {
-    .margin-rule {
-      padding-left: 2.25rem;
-    }
-    .margin-rule::before {
-      left: 0.875rem;
-    }
-  }
-
-  /* An eyebrow above a title, the way a file names its section before its subject. */
+  /* Small uppercase label — "MENU" / "GENERAL" in the reference sidebar. */
   .eyebrow {
-    font-family: var(--font-mono);
     font-size: 10.5px;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
     color: var(--color-ink-400);
   }
 
-  /* Hairline that separates a heading from its contents, as a ruled register does. */
+  /* Hairline under a heading. */
   .ruled {
     border-bottom: 1px solid var(--color-paper-edge);
+  }
+
+  /*
+    THE SIGNATURE — the diagonal hatch.
+    The reference draws every bar and arc segment that holds no value as a hatched
+    ghost rather than leaving a gap, so an empty slot still reads as a slot. Used
+    here for anything not yet filled in: empty states, skeletons, unused capacity.
+  */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-ink-100) 0 1.5px,
+      transparent 1.5px 6px
+    );
+  }
+  .hatch-brand {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-brand-200) 0 1.5px,
+      transparent 1.5px 6px
+    );
+  }
+
+  /* The dark board: near-black carrying a low yellow sweep. */
+  .board {
+    background:
+      radial-gradient(120% 90% at 85% 0%, rgba(245, 197, 24, 0.22), transparent 62%),
+      radial-gradient(90% 70% at 0% 100%, rgba(245, 197, 24, 0.08), transparent 55%),
+      #0d0d0d;
   }
 }
 

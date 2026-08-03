@@ -16,12 +16,12 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
 
   return (
     <article className="mx-auto max-w-3xl">
-      <Link href="/newsletter" className="mb-4 inline-block text-sm text-rule hover:underline">
+      <Link href="/newsletter" className="mb-4 inline-block text-sm text-brand-600 hover:underline">
         ← All issues
       </Link>
 
       <Card className="p-7">
-        <p className="text-xs font-medium tracking-wider text-rule uppercase">{i.issue_no}</p>
+        <p className="text-[11.5px] font-semibold text-brand-600">{i.issue_no}</p>
         <h1 className="mt-2 font-display text-3xl text-ink-900">{i.title}</h1>
         <p className="mt-1 text-sm text-ink-500">
           {i.period} · published {day(i.published_at)}
@@ -48,7 +48,7 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
         {i.document_id && (
           <p className="mt-4 text-xs text-ink-400">
             Also filed in the{' '}
-            <Link href={`/documents/${i.document_id}`} className="text-rule hover:underline">
+            <Link href={`/documents/${i.document_id}`} className="text-brand-600 hover:underline">
               Newsletter Archive
             </Link>{' '}
             of the document library.
@@ -64,7 +64,7 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
         </p>
         <Link
           href="/contact?category=general&subject=Newsletter+contribution"
-          className="mt-3 inline-block text-sm text-rule hover:underline"
+          className="mt-3 inline-block text-sm text-brand-600 hover:underline"
         >
           Submit a contribution →
         </Link>

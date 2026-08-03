@@ -54,7 +54,7 @@ export default async function NewsletterPage({
             <option key={y} value={y}>{y}</option>
           ))}
         </select>
-        <button className="h-9 rounded bg-ink-900 px-4 text-sm font-medium text-white">Search</button>
+        <button className="h-10 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">Search</button>
       </form>
 
       {!issues?.length ? (
@@ -65,13 +65,13 @@ export default async function NewsletterPage({
             <Card className="mb-6 flex flex-col gap-6 p-6 transition-colors hover:border-ink-200 sm:flex-row">
               <Cover period={latest.period} issue={latest.issue_no} large />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium tracking-wider text-rule uppercase">Current issue</p>
+                <p className="text-[11.5px] font-semibold text-brand-600">Current issue</p>
                 <h2 className="mt-2 font-display text-2xl text-ink-900">{latest.title}</h2>
                 <p className="mt-1 text-sm text-ink-500">
                   {latest.issue_no} · {latest.period}
                 </p>
                 <p className="mt-3 text-[15px] leading-relaxed text-ink-700">{latest.editorial}</p>
-                <p className="mt-4 text-sm text-rule">Read this issue →</p>
+                <p className="mt-4 text-sm text-brand-600">Read this issue →</p>
               </div>
             </Card>
           </Link>
@@ -102,7 +102,7 @@ export default async function NewsletterPage({
 function Cover({ period, issue, large }: { period: string | null; issue: string; large?: boolean }) {
   return (
     <div
-      className={`flex shrink-0 flex-col items-center justify-center rounded-sm bg-ink-900 px-3 text-center ${
+      className={`board flex shrink-0 flex-col items-center justify-center rounded-xl px-3 text-center ${
         large ? 'h-52 w-38' : 'h-32 w-24'
       }`}
     >
@@ -110,7 +110,7 @@ function Cover({ period, issue, large }: { period: string | null; issue: string;
       <span className={`mt-2 font-display leading-tight text-white ${large ? 'text-base' : 'text-[11px]'}`}>
         The Gauhati Bar Review
       </span>
-      <span className={`my-2 h-px bg-rule ${large ? 'w-10' : 'w-6'}`} />
+      <span className={`my-2 h-px bg-brand-400 ${large ? 'w-10' : 'w-6'}`} />
       <span className={`font-display text-white/70 ${large ? 'text-xs' : 'text-[9px]'}`}>{period}</span>
       <span className={`mt-0.5 font-display text-white/40 ${large ? 'text-[10px]' : 'text-[8px]'}`}>{issue}</span>
     </div>

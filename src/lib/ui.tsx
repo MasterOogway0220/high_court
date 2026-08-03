@@ -5,26 +5,26 @@ import type { ComponentProps, ReactNode } from 'react'
 export const cn = (...c: ClassValue[]) => twMerge(clsx(c))
 
 /*
-  Primitives for the court-file direction.
+  Primitives.
 
-  Surfaces are filed paper, not floating cards: a hairline edge and a flat
-  raised tone, no drop shadows. Anything with real interaction complexity uses
-  the native element — <select>, <details>, <dialog> — which brings keyboard
-  handling and screen-reader semantics without a component library.
+  Surfaces are white cards with a hairline edge and a 16px radius; controls carry a
+  small 8px radius; status reads as a soft tinted chip. Anything with real interaction
+  complexity uses the native element — <select>, <details>, <dialog> — which brings
+  keyboard handling and screen-reader semantics without a component library.
 */
 
 const variants = {
-  primary: 'bg-ink-900 text-paper-raised hover:bg-ink-800 disabled:bg-ink-300',
-  accent: 'bg-rule text-paper-raised hover:bg-[#8f2b24] disabled:bg-rule-soft',
-  outline: 'border border-paper-edge bg-paper-raised text-ink-800 hover:border-ink-300 hover:bg-white',
+  primary: 'bg-brand-600 text-white hover:bg-brand-700 disabled:bg-ink-300',
+  accent: 'bg-brand-400 text-ink-900 hover:bg-brand-500 disabled:bg-brand-200',
+  outline: 'border border-paper-edge bg-white text-ink-800 hover:border-ink-300 hover:bg-paper-sunk',
   ghost: 'text-ink-500 hover:bg-paper-sunk hover:text-ink-900',
-  danger: 'border border-rule-soft bg-paper-raised text-rule hover:bg-rule-wash',
+  danger: 'border border-alert-wash bg-alert-wash text-alert hover:bg-alert hover:text-white',
 }
 
 const sizes = {
-  sm: 'h-8 px-3 text-[12.5px]',
-  md: 'h-9.5 px-4 text-[13.5px]',
-  lg: 'h-11 px-5 text-[15px]',
+  sm: 'h-8 px-3.5 text-[12.5px]',
+  md: 'h-10 px-4.5 text-[13px]',
+  lg: 'h-12 px-6 text-[14px]',
 }
 
 export function Button({
@@ -36,7 +36,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-[3px] font-medium transition-colors',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors',
         'disabled:cursor-not-allowed disabled:opacity-70',
         variants[variant],
         sizes[size],
@@ -47,36 +47,36 @@ export function Button({
   )
 }
 
-/** A sheet of filed paper. Flat, hairline-edged — a document, not a floating card. */
+/** A card. White, hairline-edged, 16px radius — the unit the whole dashboard is built from. */
 export function Card({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn('rounded-[3px] border border-paper-edge bg-paper-raised', className)}
+      className={cn('rounded-card border border-paper-edge bg-paper-raised', className)}
       {...props}
     />
   )
 }
 
 const field =
-  'w-full rounded-[3px] border border-paper-edge bg-paper-raised px-3 text-[13.5px] text-ink-900 ' +
-  'placeholder:text-ink-300 transition-colors focus:border-ink-500 focus:bg-white focus:outline-none'
+  'w-full rounded-lg border border-paper-edge bg-white px-3.5 text-[13px] text-ink-900 ' +
+  'placeholder:text-ink-300 transition-colors focus:border-brand-400 focus:outline-none'
 
 export function Input({ className, ...props }: ComponentProps<'input'>) {
-  return <input className={cn(field, 'h-9.5', className)} {...props} />
+  return <input className={cn(field, 'h-10', className)} {...props} />
 }
 
 export function Select({ className, ...props }: ComponentProps<'select'>) {
-  return <select className={cn(field, 'h-9.5 px-2.5', className)} {...props} />
+  return <select className={cn(field, 'h-10 px-3', className)} {...props} />
 }
 
 export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
-  return <textarea className={cn(field, 'py-2 leading-relaxed', className)} {...props} />
+  return <textarea className={cn(field, 'py-2.5 leading-relaxed', className)} {...props} />
 }
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block">
-      <span className="eyebrow mb-1.5 block">{label}</span>
+      <span className="mb-1.5 block text-[12.5px] font-semibold text-ink-700">{label}</span>
       {children}
       {hint && <span className="mt-1.5 block text-[12px] leading-snug text-ink-400">{hint}</span>}
     </label>
@@ -84,14 +84,14 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 }
 
 const tones = {
-  neutral: 'border-paper-edge bg-paper-sunk text-ink-500',
-  navy: 'border-ink-200 bg-ink-50 text-ink-700',
-  maroon: 'border-rule-soft bg-rule-wash text-rule',
-  green: 'border-[#bcd0c2] bg-seal-wash text-seal',
-  amber: 'border-[#ddcba4] bg-[#f6efe0] text-[#7a5c1b]',
+  neutral: 'bg-paper-sunk text-ink-500',
+  info: 'bg-info-wash text-info',
+  alert: 'bg-alert-wash text-alert',
+  success: 'bg-brand-50 text-brand-600',
+  warn: 'bg-warn-wash text-warn',
 }
 
-/** Small, squared, uppercase — a stamp on a file, not a pill. */
+/** A soft tinted chip, as the reference marks task status. */
 export function Badge({
   tone = 'neutral',
   className,
@@ -100,7 +100,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-[2px] border px-1.5 py-px font-mono text-[10px] tracking-[0.08em] uppercase',
+        'inline-flex items-center rounded-md px-2 py-0.5 text-[10.5px] font-semibold capitalize',
         tones[tone],
         className
       )}
@@ -109,12 +109,17 @@ export function Badge({
   )
 }
 
-/** A record number, date or reference. Monospaced because a register is. */
+/** A record number, date or reference. Tabular so figures line up down a column. */
 export function Record({ className, ...props }: ComponentProps<'span'>) {
-  return <span className={cn('font-mono text-[12px] text-ink-400', className)} {...props} />
+  return (
+    <span
+      className={cn('text-[11.5px] text-ink-400 tabular-nums', className)}
+      {...props}
+    />
+  )
 }
 
-/** Page header, set the way a file names its section before its subject. */
+/** Page header: title, one line of purpose, actions on the right. */
 export function Heading({
   children,
   sub,
@@ -127,35 +132,39 @@ export function Heading({
   aside?: ReactNode
 }) {
   return (
-    <header className="ruled mb-6 flex flex-wrap items-end justify-between gap-4 pb-4">
+    <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
         <h1 className="text-[26px] text-ink-900 sm:text-[30px]">{children}</h1>
-        {sub && <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-ink-500">{sub}</p>}
+        {sub && <p className="mt-1.5 max-w-2xl text-[13px] text-ink-400">{sub}</p>}
       </div>
-      {aside && <div className="shrink-0">{aside}</div>}
+      {aside && <div className="flex shrink-0 items-center gap-2.5">{aside}</div>}
     </header>
   )
 }
 
-/** Section heading inside a page. */
+/** Section heading inside a card. */
 export function SectionTitle({ children, href, label }: { children: ReactNode; href?: string; label?: string }) {
   return (
-    <div className="ruled mb-3 flex items-baseline justify-between gap-3 pb-2">
-      <h2 className="text-[15px] font-medium text-ink-800">{children}</h2>
+    <div className="mb-3.5 flex items-center justify-between gap-3">
+      <h2 className="text-[15px] font-bold text-ink-900">{children}</h2>
       {href && (
-        <a href={href} className="font-mono text-[11px] tracking-wide text-rule hover:underline">
-          {label ?? 'View all'} →
+        <a
+          href={href}
+          className="rounded-lg border border-paper-edge px-2.5 py-1 text-[11.5px] font-semibold text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600"
+        >
+          {label ?? 'View all'}
         </a>
       )}
     </div>
   )
 }
 
-/** An empty state is an instruction, never a blank card (PRD 3.1). */
+/** An empty state is an instruction, never a blank card (PRD 3.1). Hatched, as the
+    reference draws any slot that holds no value yet. */
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-[3px] border border-dashed border-paper-edge bg-paper px-4 py-6 text-center text-[13px] text-ink-400">
+    <p className="hatch rounded-xl border border-paper-edge px-4 py-6 text-center text-[12.5px] text-ink-400">
       {children}
     </p>
   )

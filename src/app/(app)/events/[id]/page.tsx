@@ -40,15 +40,15 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <Link href="/events" className="mb-4 inline-block text-sm text-rule hover:underline">
+      <Link href="/events" className="mb-4 inline-block text-sm text-brand-600 hover:underline">
         ← All events
       </Link>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <Card className="overflow-hidden">
-            <div className="flex h-32 items-end bg-ink-900 p-5">
-              <Badge tone="navy" className="border-white/20 bg-white/10 text-white">
+            <div className="board flex h-32 items-end p-5">
+              <Badge tone="info" className="bg-white/15 text-white">
                 {EVENT_TYPE[e.event_type]}
               </Badge>
             </div>
@@ -100,7 +100,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                   {going.map((r) => (
                     <li key={r.member_id} className="flex items-center gap-2.5">
                       <Avatar name={r.members.full_name} url={r.members.photo_url} size={8} />
-                      <Link href={`/directory/${r.member_id}`} className="truncate text-sm text-ink-700 hover:text-rule">
+                      <Link href={`/directory/${r.member_id}`} className="truncate text-sm text-ink-700 hover:text-brand-600">
                         {r.members.full_name}
                         {r.guests > 0 && <span className="text-ink-400"> +{r.guests}</span>}
                       </Link>
@@ -138,7 +138,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               <p className="mb-2 text-xs tracking-wider text-ink-400 uppercase">Capacity</p>
               <div className="h-2 overflow-hidden rounded-full bg-paper-edge">
                 <div
-                  className="h-full rounded-full bg-rule transition-[width]"
+                  className="h-full rounded-full bg-brand-600 transition-[width]"
                   style={{ width: `${Math.min(100, (seats / e.capacity) * 100)}%` }}
                 />
               </div>

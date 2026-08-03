@@ -40,7 +40,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
 
   return (
     <>
-      <Link href="/directory" className="mb-4 inline-block text-sm text-rule hover:underline">
+      <Link href="/directory" className="mb-4 inline-block text-sm text-brand-600 hover:underline">
         ← Back to directory
       </Link>
 
@@ -52,8 +52,8 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               <h1 className="font-display text-2xl text-ink-900">{m.full_name}</h1>
               <p className="mt-1 text-sm text-ink-600">{DESIGNATION[m.designation]}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
-                <Badge tone="navy">{m.enrolment_no}</Badge>
-                <Badge tone={['active', 'life'].includes(m.membership_status) ? 'green' : 'amber'}>
+                <Badge tone="info">{m.enrolment_no}</Badge>
+                <Badge tone={['active', 'life'].includes(m.membership_status) ? 'success' : 'warn'}>
                   {m.membership_status}
                 </Badge>
                 {m.enrolment_date && <Badge>Enrolled {day(m.enrolment_date)}</Badge>}
@@ -64,7 +64,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
                   <p className="mb-1.5 text-xs tracking-wider text-ink-400 uppercase">Practice areas</p>
                   <div className="flex flex-wrap gap-1.5">
                     {(m.practice_areas as string[]).map((a) => (
-                      <Badge key={a} tone="maroon">{a}</Badge>
+                      <Badge key={a} tone="alert">{a}</Badge>
                     ))}
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               <li className="flex gap-2.5">
                 <Phone size={15} className="mt-0.5 shrink-0 text-ink-300" />
                 {showMobile ? (
-                  <a href={`tel:${m.mobile}`} className="text-ink-700 hover:text-rule">{m.mobile}</a>
+                  <a href={`tel:${m.mobile}`} className="text-ink-700 hover:text-brand-600">{m.mobile}</a>
                 ) : (
                   <span className="flex items-center gap-1.5 text-ink-300">
                     <EyeOff size={13} /> Hidden by member
@@ -122,7 +122,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               <li className="flex gap-2.5">
                 <Mail size={15} className="mt-0.5 shrink-0 text-ink-300" />
                 {showEmail ? (
-                  <a href={`mailto:${m.email}`} className="break-all text-ink-700 hover:text-rule">{m.email}</a>
+                  <a href={`mailto:${m.email}`} className="break-all text-ink-700 hover:text-brand-600">{m.email}</a>
                 ) : (
                   <span className="flex items-center gap-1.5 text-ink-300">
                     <EyeOff size={13} /> Hidden by member
@@ -149,7 +149,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
                       const c = p.committees as any
                       return (
                         <li key={i}>
-                          <Link href={`/committee/${c.id}`} className="text-sm text-ink-800 hover:text-rule">
+                          <Link href={`/committee/${c.id}`} className="text-sm text-ink-800 hover:text-brand-600">
                             {c.name}
                           </Link>
                           <p className="text-xs text-ink-400">
@@ -181,7 +181,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
 
           {viewer.id === m.id && (
             <Link href="/settings" className="block">
-              <Card className="p-4 text-center text-sm text-rule transition-colors hover:border-rule-soft">
+              <Card className="p-4 text-center text-sm text-brand-600 transition-colors hover:border-brand-200">
                 Edit my profile
               </Card>
             </Link>

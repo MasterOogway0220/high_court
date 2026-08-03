@@ -121,10 +121,10 @@ export default async function AdminPage() {
               {tickets.map((t: any) => (
                 <li key={t.id} className="py-3 first:pt-0 last:pb-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <code className="rounded-[2px] bg-paper-sunk px-1.5 py-px text-[10.5px] text-ink-500">
+                    <code className="rounded-md bg-paper-sunk px-1.5 py-px text-[10.5px] text-ink-500">
                       {t.ref_no}
                     </code>
-                    <Badge tone={t.category === 'grievance' ? 'maroon' : 'neutral'}>
+                    <Badge tone={t.category === 'grievance' ? 'alert' : 'neutral'}>
                       {TICKET_CATEGORY[t.category]}
                     </Badge>
                     <span className="ml-auto font-mono text-[10.5px] text-ink-300">{day(t.created_at)}</span>
@@ -203,7 +203,7 @@ export default async function AdminPage() {
                         {dayTime(a.at)}
                       </td>
                       <td className="py-2 pr-4">
-                        <Badge tone={a.action === 'DELETE' ? 'maroon' : a.action === 'INSERT' ? 'green' : 'navy'}>
+                        <Badge tone={a.action === 'DELETE' ? 'alert' : a.action === 'INSERT' ? 'success' : 'info'}>
                           {a.action}
                         </Badge>
                       </td>

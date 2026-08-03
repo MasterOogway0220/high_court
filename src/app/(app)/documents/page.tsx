@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
-import { Badge, Button, Card, Empty, Heading, Input } from '@/lib/ui'
+import { Badge, Card, Empty, Heading, Input } from '@/lib/ui'
 import { VISIBILITY, day, fileSize } from '@/lib/format'
 import { FileText, Folder as FolderIcon, Download } from 'lucide-react'
+import { UploadDocument } from './upload'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Document Library' }
@@ -33,19 +34,13 @@ export default async function DocumentsPage({
 
   return (
     <>
-      <Heading
-        eyebrow="Association record"
-        sub="Constitution, circulars, minutes, forms and records."
-        aside={
-          viewer.canPublish || viewer.isStaff ? (
-            <Link href="/manage/documents/new">
-              <Button size="sm">New document</Button>
-            </Link>
-          ) : null
-        }
-      >
+      <Heading eyebrow="Association record" sub="Constitution, circulars, minutes, forms and records.">
         Document Library
       </Heading>
+
+      {(viewer.canPublish || viewer.isStaff) && (
+        <UploadDocument folders={(folders ?? []).map((f) => ({ id: f.id, name: f.name }))} />
+      )}
 
       <div className="grid gap-4 lg:grid-cols-[15rem_1fr]">
         <aside>
@@ -98,7 +93,7 @@ export default async function DocumentsPage({
                           <div className="flex flex-wrap items-center gap-1.5">
                             <p className="text-sm font-medium text-ink-900">{d.title}</p>
                             {d.visibility !== 'all_members' && (
-                              <Badge tone="amber">{VISIBILITY[d.visibility]}</Badge>
+                              <Badge tone="warn">{VISIBILITY[d.visibility]}</Badge>
                             )}
                             {v?.version > 1 && <Badge>v{v.version}</Badge>}
                           </div>

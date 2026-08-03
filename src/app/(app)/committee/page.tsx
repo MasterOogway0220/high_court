@@ -38,24 +38,13 @@ export default async function CommitteePage({
         Bar Committee
       </Heading>
 
-      <div className="mb-5 flex flex-wrap items-center gap-2">
-        <span className="text-sm text-ink-400">Term</span>
-        {terms?.map((t) => (
-          <Link
-            key={t.id}
-            href={`/committee?term=${t.id}`}
-            className={`rounded-full border px-3 py-1 text-sm ${
-              t.id === term?.id
-                ? 'border-ink-900 bg-ink-900 text-white'
-                : 'border-paper-edge text-ink-600 hover:bg-paper-sunk'
-            }`}
-          >
-            {t.label}
-            {t.is_current && t.id !== term?.id && ' ·'}
-          </Link>
-        ))}
-        {!term?.is_current && <Badge tone="amber">Archived term — read only</Badge>}
-      </div>
+      {/* No term switcher: the page shows the current term. A ?term= link still
+          resolves an earlier one, and says so. */}
+      {!term?.is_current && (
+        <div className="mb-5">
+          <Badge tone="warn">Archived term — read only</Badge>
+        </div>
+      )}
 
       {!committees?.length ? (
         <Empty>No committees are recorded for this term.</Empty>
@@ -63,7 +52,7 @@ export default async function CommitteePage({
         <div className="space-y-8">
           {officeBearers && (
             <section>
-              <h2 className="rule-accent mb-4 text-lg text-ink-900">Office Bearers</h2>
+              <h2 className="mb-4 text-lg text-ink-900">Office Bearers</h2>
               {(() => {
                 const [president, ...others] = sorted(officeBearers)
                 return (
@@ -72,17 +61,17 @@ export default async function CommitteePage({
                       <Card className="mb-4 flex flex-col gap-5 p-6 sm:flex-row">
                         <Avatar name={president.members.full_name} url={president.members.photo_url} size={20} />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium tracking-wider text-rule uppercase">
+                          <p className="text-[11.5px] font-semibold text-brand-600">
                             {president.designation}
                           </p>
                           <Link
                             href={`/directory/${president.members.id}`}
-                            className="mt-1 block font-display text-xl text-ink-900 hover:text-rule"
+                            className="mt-1 block font-display text-xl text-ink-900 hover:text-brand-600"
                           >
                             {president.members.full_name}
                           </Link>
                           <p className="mt-0.5 text-sm text-ink-400">{president.members.enrolment_no}</p>
-                          <blockquote className="mt-4 border-l-2 border-rule-soft pl-4 text-[15px] leading-relaxed text-ink-600 italic">
+                          <blockquote className="mt-4 border-l-2 border-brand-200 pl-4 text-[15px] leading-relaxed text-ink-600 italic">
                             The Association exists to protect the dignity of the Bar and the interests of every
                             member of it. This dashboard is a step towards making that work visible and accessible
                             to all of you.
@@ -103,7 +92,7 @@ export default async function CommitteePage({
 
           {executive && (
             <section>
-              <h2 className="rule-accent mb-4 text-lg text-ink-900">Executive Committee</h2>
+              <h2 className="mb-4 text-lg text-ink-900">Executive Committee</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {sorted(executive).map((p: any) => (
                   <MemberCard key={p.members.id} p={p} />
@@ -114,8 +103,8 @@ export default async function CommitteePage({
 
           {!!standing.length && (
             <section>
-              <h2 className="rule-accent mb-4 text-lg text-ink-900">Standing & Sub-Committees</h2>
-              <div className="grid gap-3 md:grid-cols-2">
+              <h2 className="mb-4 text-lg text-ink-900">Standing & Sub-Committees</h2>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {standing.map((c) => (
                   <Link key={c.id} href={`/committee/${c.id}`}>
                     <Card className="h-full p-5 transition-colors hover:border-ink-200">
@@ -153,8 +142,8 @@ function MemberCard({ p }: { p: any }) {
       <div className="flex justify-center">
         <Avatar name={p.members.full_name} url={p.members.photo_url} size={14} />
       </div>
-      <p className="mt-2.5 text-[11px] font-medium tracking-wide text-rule uppercase">{p.designation}</p>
-      <Link href={`/directory/${p.members.id}`} className="mt-1 block text-sm text-ink-900 hover:text-rule">
+      <p className="mt-2.5 text-[11.5px] font-semibold text-brand-600">{p.designation}</p>
+      <Link href={`/directory/${p.members.id}`} className="mt-1 block text-sm text-ink-900 hover:text-brand-600">
         {p.members.full_name}
       </Link>
       <p className="mt-0.5 text-xs text-ink-400">{p.members.enrolment_no}</p>
