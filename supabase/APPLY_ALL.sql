@@ -1,12 +1,9 @@
 -- GHCBA — complete schema, security, functions, demo data and checks.
--- Paste this whole file into the Supabase SQL Editor and Run.
--- Safe to re-run: it truncates seeded data and recreates policies.
--- Expect a final notice: 'RLS visibility checks passed.'
+-- Paste into the Supabase SQL Editor and Run, OR use: npm run db:apply
+-- Safe to re-run. Expect a final notice: 'RLS visibility checks passed.'
 
 
--- ═══════════════════════════════════════════════════════════════
--- 001_schema.sql
--- ═══════════════════════════════════════════════════════════════
+-- ═══ 001_schema.sql ═══
 
 -- GHCBA Member Dashboard — schema
 -- Run in Supabase SQL Editor. Idempotent-ish: drops and recreates the ghcba schema objects.
@@ -469,9 +466,7 @@ begin
   end loop;
 end $$;
 
--- ═══════════════════════════════════════════════════════════════
--- 002_rls.sql
--- ═══════════════════════════════════════════════════════════════
+-- ═══ 002_rls.sql ═══
 
 -- GHCBA — row level security. This file IS the permission model (PRD 2.1).
 -- Every read path goes through `sees(visibility)`; nothing is gated in app code.
@@ -732,9 +727,7 @@ create policy prefs_own on notification_prefs for all
 
 create policy audit_read on audit_log for select using (is_staff());
 
--- ═══════════════════════════════════════════════════════════════
--- 003_functions.sql
--- ═══════════════════════════════════════════════════════════════
+-- ═══ 003_functions.sql ═══
 
 -- GHCBA — server-side logic that belongs in the database, not the app.
 
@@ -909,9 +902,7 @@ grant execute on function global_search(text, int)            to authenticated;
 grant execute on function bump_download(bigint)               to authenticated;
 grant execute on function unread_count()                      to authenticated;
 
--- ═══════════════════════════════════════════════════════════════
--- 004_seed.sql
--- ═══════════════════════════════════════════════════════════════
+-- ═══ 004_seed.sql ═══
 
 -- GHCBA — demo seed. Creates real auth users so the dashboard is loginable.
 -- Every account uses the password: demo1234
@@ -979,9 +970,29 @@ begin
   return uid;
 end $$;
 
+-- helper: document + its first version.
+-- Defined out here, not inside the seeding block below: a $$-quoted function body
+-- nested inside a $$-quoted DO block terminates the outer block at its first $$.
+create or replace function seed_doc(
+  p_title text, p_desc text, p_folder bigint, p_tags text[],
+  p_vis visibility, p_uploader uuid, p_file text, p_size bigint
+) returns bigint
+language plpgsql security definer set search_path = public as $fn$
+declare did bigint;
+begin
+  insert into documents (title, description, folder_id, tags, visibility, uploader_id, download_count)
+  values (p_title, p_desc, p_folder, p_tags, p_vis, p_uploader, floor(random() * 90)::int)
+  returning id into did;
+
+  insert into document_versions (document_id, version, file_path, file_name, size_bytes, mime_type, uploaded_by)
+  values (did, 1, 'demo/' || p_file, p_file, p_size, 'application/pdf', p_uploader);
+
+  return did;
+end $fn$;
+
 -- ─────────────────────────────────────────────────────────── members
 
-do $$
+do $seed$
 declare
   president uuid; vp uuid; secretary uuid; treasurer uuid; jt_secretary uuid;
   office uuid; ec1 uuid; ec2 uuid; ec3 uuid; ec4 uuid;
@@ -1213,24 +1224,6 @@ insert into folders (name, sort) values ('Miscellaneous', 9)            returnin
 insert into folders (name, parent_id, sort) values
   ('2026', f_min, 1), ('2025', f_min, 2), ('2024', f_min, 3);
 
--- helper: document + its first version
-create or replace function seed_doc(
-  p_title text, p_desc text, p_folder bigint, p_tags text[],
-  p_vis visibility, p_uploader uuid, p_file text, p_size bigint
-) returns bigint
-language plpgsql security definer set search_path = public as $$
-declare did bigint;
-begin
-  insert into documents (title, description, folder_id, tags, visibility, uploader_id, download_count)
-  values (p_title, p_desc, p_folder, p_tags, p_vis, p_uploader, floor(random() * 90)::int)
-  returning id into did;
-
-  insert into document_versions (document_id, version, file_path, file_name, size_bytes, mime_type, uploaded_by)
-  values (did, 1, 'demo/' || p_file, p_file, p_size, 'application/pdf', p_uploader);
-
-  return did;
-end $$;
-
 perform seed_doc('Constitution of the Guwahati High Court Bar Association',
   'The Constitution as amended up to the General Body Meeting of 12 March 2024.',
   f_const, '{constitution,bye-laws,governing}', 'all_members', office, 'ghcba-constitution-2024.pdf', 1842000);
@@ -1364,7 +1357,7 @@ select m.id, 'newsletter', 'The Gauhati Bar Review — July 2026 is out',
        'Vol. XII, No. 3 is now available to read.', '/newsletter', now() - interval '10 days'
 from members m;
 
-end $$;
+end $seed$;
 
 drop function if exists seed_member(text, text, designation, int, text, text[], text, membership_status, app_role[]);
 drop function if exists seed_doc(text, text, bigint, text[], visibility, uuid, text, bigint);
@@ -1384,9 +1377,7 @@ begin
   assert n_docs >= 20, 'document seed failed';
 end $$;
 
--- ═══════════════════════════════════════════════════════════════
--- 005_check.sql
--- ═══════════════════════════════════════════════════════════════
+-- ═══ 005_check.sql ═══
 
 -- One runnable check for the thing most likely to be quietly wrong: visibility.
 -- Asserts PRD 3.6 — "a Committee Only document never appears in a general member's

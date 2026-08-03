@@ -64,9 +64,29 @@ begin
   return uid;
 end $$;
 
+-- helper: document + its first version.
+-- Defined out here, not inside the seeding block below: a $$-quoted function body
+-- nested inside a $$-quoted DO block terminates the outer block at its first $$.
+create or replace function seed_doc(
+  p_title text, p_desc text, p_folder bigint, p_tags text[],
+  p_vis visibility, p_uploader uuid, p_file text, p_size bigint
+) returns bigint
+language plpgsql security definer set search_path = public as $fn$
+declare did bigint;
+begin
+  insert into documents (title, description, folder_id, tags, visibility, uploader_id, download_count)
+  values (p_title, p_desc, p_folder, p_tags, p_vis, p_uploader, floor(random() * 90)::int)
+  returning id into did;
+
+  insert into document_versions (document_id, version, file_path, file_name, size_bytes, mime_type, uploaded_by)
+  values (did, 1, 'demo/' || p_file, p_file, p_size, 'application/pdf', p_uploader);
+
+  return did;
+end $fn$;
+
 -- ─────────────────────────────────────────────────────────── members
 
-do $$
+do $seed$
 declare
   president uuid; vp uuid; secretary uuid; treasurer uuid; jt_secretary uuid;
   office uuid; ec1 uuid; ec2 uuid; ec3 uuid; ec4 uuid;
@@ -298,24 +318,6 @@ insert into folders (name, sort) values ('Miscellaneous', 9)            returnin
 insert into folders (name, parent_id, sort) values
   ('2026', f_min, 1), ('2025', f_min, 2), ('2024', f_min, 3);
 
--- helper: document + its first version
-create or replace function seed_doc(
-  p_title text, p_desc text, p_folder bigint, p_tags text[],
-  p_vis visibility, p_uploader uuid, p_file text, p_size bigint
-) returns bigint
-language plpgsql security definer set search_path = public as $$
-declare did bigint;
-begin
-  insert into documents (title, description, folder_id, tags, visibility, uploader_id, download_count)
-  values (p_title, p_desc, p_folder, p_tags, p_vis, p_uploader, floor(random() * 90)::int)
-  returning id into did;
-
-  insert into document_versions (document_id, version, file_path, file_name, size_bytes, mime_type, uploaded_by)
-  values (did, 1, 'demo/' || p_file, p_file, p_size, 'application/pdf', p_uploader);
-
-  return did;
-end $$;
-
 perform seed_doc('Constitution of the Guwahati High Court Bar Association',
   'The Constitution as amended up to the General Body Meeting of 12 March 2024.',
   f_const, '{constitution,bye-laws,governing}', 'all_members', office, 'ghcba-constitution-2024.pdf', 1842000);
@@ -449,7 +451,7 @@ select m.id, 'newsletter', 'The Gauhati Bar Review — July 2026 is out',
        'Vol. XII, No. 3 is now available to read.', '/newsletter', now() - interval '10 days'
 from members m;
 
-end $$;
+end $seed$;
 
 drop function if exists seed_member(text, text, designation, int, text, text[], text, membership_status, app_role[]);
 drop function if exists seed_doc(text, text, bigint, text[], visibility, uuid, text, bigint);
