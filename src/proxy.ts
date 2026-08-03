@@ -57,14 +57,18 @@ export async function proxy(request: NextRequest) {
     if (user) return NextResponse.redirect(request.nextUrl, { headers: response.headers })
   }
 
-  if (DEMO && PUBLIC.some((p) => pathname.startsWith(p))) {
+  const isPublic = PUBLIC.some((p) => pathname.startsWith(p))
+
+  // Only skip past /login once a session actually exists. Redirecting away from the
+  // login page purely because demo mode is configured means a failed auto-login
+  // bounces between / and /login forever, which the browser reports as
+  // ERR_TOO_MANY_REDIRECTS rather than as the sign-in failure it is.
+  if (DEMO && user && isPublic) {
     const to = request.nextUrl.clone()
     to.pathname = '/'
     to.searchParams.delete('next')
     return NextResponse.redirect(to)
   }
-
-  const isPublic = PUBLIC.some((p) => pathname.startsWith(p))
 
   if (!user && !isPublic) {
     const to = request.nextUrl.clone()
