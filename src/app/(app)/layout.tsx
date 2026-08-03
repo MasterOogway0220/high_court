@@ -49,17 +49,24 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <div className="text-[13px] font-medium text-white">{member.full_name}</div>
               <div className="text-[11px] text-white/50">{member.enrolment_no}</div>
             </div>
-            <form action={signOut}>
-              <button className="rounded px-2 py-1 text-xs text-white/60 transition-colors hover:bg-white/10 hover:text-white">
-                Sign out
-              </button>
-            </form>
+            {/* Signing out under DEMO_AUTO_LOGIN would only sign straight back in. */}
+            {!process.env.DEMO_AUTO_LOGIN && (
+              <form action={signOut}>
+                <button className="rounded px-2 py-1 text-xs text-white/60 transition-colors hover:bg-white/10 hover:text-white">
+                  Sign out
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </header>
 
       <div className="mx-auto flex w-full max-w-[1400px] flex-1 gap-8 px-4 py-6 sm:px-6">
-        <Nav canPublish={member.canPublish} isStaff={member.isStaff} />
+        {/* Demo mode shows every section, roles aside. */}
+        <Nav
+          canPublish={member.canPublish || !!process.env.DEMO_AUTO_LOGIN}
+          isStaff={member.isStaff || !!process.env.DEMO_AUTO_LOGIN}
+        />
         <main className="min-w-0 flex-1 pb-16">{children}</main>
       </div>
 
