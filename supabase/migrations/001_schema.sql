@@ -4,6 +4,15 @@
 create extension if not exists pg_trgm;
 create extension if not exists unaccent;
 
+-- array_to_string is STABLE, not IMMUTABLE, because an arbitrary element type's
+-- output function may not be immutable. Postgres therefore rejects it inside a
+-- generated column. For text[] specifically the conversion genuinely is immutable,
+-- so this narrow wrapper is safe and keeps practice areas and tags searchable.
+create or replace function imm_join(arr text[], sep text) returns text
+language sql immutable parallel safe as $fn$
+  select array_to_string(arr, sep)
+$fn$;
+
 -- ─────────────────────────────────────────────────────────── enums
 
 do $$ begin
@@ -91,7 +100,7 @@ alter table members add column search_tsv tsvector
     to_tsvector('simple',
       coalesce(full_name, '') || ' ' ||
       coalesce(enrolment_no, '') || ' ' ||
-      coalesce(array_to_string(practice_areas, ' '), '') || ' ' ||
+      coalesce(imm_join(practice_areas, ' '), '') || ' ' ||
       coalesce(chamber_address, ''))
   ) stored;
 
@@ -266,7 +275,7 @@ alter table documents add column search_tsv tsvector
   generated always as (
     setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
     setweight(to_tsvector('english', coalesce(description, '')), 'B') ||
-    setweight(to_tsvector('english', coalesce(array_to_string(tags, ' '), '')), 'C')
+    setweight(to_tsvector('english', coalesce(imm_join(tags, ' '), '')), 'C')
   ) stored;
 
 create index if not exists doc_search_idx on documents using gin (search_tsv);

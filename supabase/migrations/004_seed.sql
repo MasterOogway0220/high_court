@@ -31,14 +31,20 @@ declare
   em  text := lower(replace(replace(p_enrol, '/', '-'), ' ', '')) || '@ghcba.demo';
   r   app_role;
 begin
+  -- GoTrue scans several of these token columns into non-nullable Go strings. Leaving
+  -- them NULL makes every sign-in fail with "Database error querying schema", which
+  -- reads like a permissions fault rather than a data one. They must be '', not NULL.
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-    raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new, email_change,
+    email_change_token_current, phone_change, phone_change_token, reauthentication_token
   ) values (
     '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated',
     em, extensions.crypt('demo1234', extensions.gen_salt('bf')), now(),
     '{"provider":"email","providers":["email"]}', jsonb_build_object('full_name', p_name),
-    now(), now()
+    now(), now(),
+    '', '', '', '', '', '', '', ''
   );
 
   insert into auth.identities (
@@ -466,7 +472,9 @@ begin
   select count(*) into n_docs from documents;
   select count(*) into n_ev from events;
   raise notice 'seeded: % members, % announcements, % documents, % events', n_members, n_ann, n_docs, n_ev;
-  assert n_members >= 19, 'member seed failed';
-  assert n_ann >= 10, 'announcement seed failed';
-  assert n_docs >= 20, 'document seed failed';
+  -- 18 members: 6 office bearers incl. the secretariat, 4 executive committee, 8 ordinary
+  assert n_members = 18, format('expected 18 members, got %s', n_members);
+  assert n_ann >= 10,    format('expected at least 10 announcements, got %s', n_ann);
+  assert n_docs >= 20,   format('expected at least 20 documents, got %s', n_docs);
+  assert n_ev  >= 4,     format('expected at least 4 events, got %s', n_ev);
 end $$;
