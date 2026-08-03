@@ -14,7 +14,15 @@ export async function signIn(_prev: string | null, form: FormData): Promise<stri
 
   // PRD 4.1: members log in with an enrolment number or a registered mobile, neither of
   // which Supabase Auth understands. One resolver, rather than a parallel credential store.
-  const { data: email } = await supabase.rpc('email_for_login', { identifier })
+  const { data: email, error: lookupError } = await supabase.rpc('email_for_login', { identifier })
+
+  // A failed lookup and an unknown member are different faults with different fixes.
+  // Reporting a broken key or a missing migration as "no member found" sends whoever is
+  // debugging it to the wrong place entirely.
+  if (lookupError) {
+    console.error('[login] email_for_login failed:', lookupError.message)
+    return 'Sign-in is unavailable — the directory could not be reached. Contact the Association office.'
+  }
   if (!email) return 'No member found with that enrolment number or mobile number.'
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
