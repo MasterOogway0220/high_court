@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading, Input } from '@/lib/ui'
+import { Badge, Button, Card, Empty, Heading, Input } from '@/lib/ui'
 import { VISIBILITY, day, fileSize } from '@/lib/format'
 import { FileText, Folder as FolderIcon, Download } from 'lucide-react'
 
@@ -33,7 +33,19 @@ export default async function DocumentsPage({
 
   return (
     <>
-      <Heading sub="Constitution, circulars, minutes, forms and association records.">Document Library</Heading>
+      <Heading
+        eyebrow="Association record"
+        sub="Constitution, circulars, minutes, forms and records."
+        aside={
+          viewer.canPublish || viewer.isStaff ? (
+            <Link href="/manage/documents/new">
+              <Button size="sm">New document</Button>
+            </Link>
+          ) : null
+        }
+      >
+        Document Library
+      </Heading>
 
       <div className="grid gap-4 lg:grid-cols-[15rem_1fr]">
         <aside>
@@ -43,7 +55,7 @@ export default async function DocumentsPage({
               <li>
                 <Link
                   href="/documents"
-                  className={`block rounded px-2 py-1.5 text-sm ${!sp.folder ? 'bg-sand-100 font-medium text-ink-900' : 'text-ink-600 hover:bg-sand-50'}`}
+                  className={`block rounded px-2 py-1.5 text-sm ${!sp.folder ? 'bg-paper-sunk font-medium text-ink-900' : 'text-ink-600 hover:bg-paper'}`}
                 >
                   All documents
                 </Link>
@@ -53,7 +65,7 @@ export default async function DocumentsPage({
                   <Link
                     href={`/documents?folder=${f.id}`}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${
-                      sp.folder === String(f.id) ? 'bg-sand-100 font-medium text-ink-900' : 'text-ink-600 hover:bg-sand-50'
+                      sp.folder === String(f.id) ? 'bg-paper-sunk font-medium text-ink-900' : 'text-ink-600 hover:bg-paper'
                     }`}
                   >
                     <FolderIcon size={14} className="shrink-0 text-ink-300" />

@@ -1,33 +1,49 @@
 @import 'tailwindcss';
 
-/* GHCBA — institutional, restrained. Deep navy + maroon on warm grey (PRD 5.3).
-   No dark mode in v1, by design. */
+/*
+  GHCBA — the court file.
+
+  The design is taken from the artefact every advocate at this Bar handles daily:
+  a court file on legal pleading paper. That paper carries a double red rule down
+  the left margin, entries are numbered, and every record — enrolment number, cause
+  number, date — is set in a register hand. Those three facts drive the palette,
+  the type system and the one signature device.
+
+  No cream. Legal bond paper is a cool grey-green, not a warm cream, and the
+  difference is the whole character of the surface.
+*/
 @theme {
-  --color-ink-50: #f4f5f8;
-  --color-ink-100: #e4e7ee;
-  --color-ink-200: #c6ccdb;
-  --color-ink-300: #9aa5bd;
-  --color-ink-400: #6b7896;
-  --color-ink-600: #33456e;
-  --color-ink-700: #22355c;
-  --color-ink-800: #1a2949;
-  --color-ink-900: #16243f;
+  /* court ink — near-black with a blue cast, the colour of an official stamp */
+  --color-ink-900: #0f171e;
+  --color-ink-800: #18242e;
+  --color-ink-700: #24343f;
+  --color-ink-600: #344857;
+  --color-ink-500: #4a5f6e;
+  --color-ink-400: #6a7f8d;
+  --color-ink-300: #93a5b0;
+  --color-ink-200: #bccad2;
+  --color-ink-100: #dee6ea;
+  --color-ink-50: #eef3f5;
 
-  --color-maroon-50: #fbf3f2;
-  --color-maroon-100: #f5e2e0;
-  --color-maroon-200: #e9c5c1;
-  --color-maroon-600: #8f3831;
-  --color-maroon-700: #7b2d26;
-  --color-maroon-900: #4e1b16;
+  /* legal bond paper. The page sits a shade below the sheets filed on it, so a
+     document reads as a document without needing a shadow to lift it. */
+  --color-paper: #e6e9e0;
+  --color-paper-raised: #f9faf6;
+  --color-paper-sunk: #dde1d5;
+  --color-paper-edge: #c9d0be;
 
-  --color-sand-50: #faf8f5;
-  --color-sand-100: #f4f1ea;
-  --color-sand-200: #e8e3d8;
-  --color-sand-300: #d8d1c2;
-  --color-sand-600: #8a8271;
+  /* the margin rule. Used for rules, marginalia and urgency — never as a fill. */
+  --color-rule: #a6322a;
+  --color-rule-soft: #cf8880;
+  --color-rule-wash: #f6e7e4;
 
-  --font-serif: var(--font-display), Georgia, 'Times New Roman', serif;
-  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  /* the only other hue: a muted register green for standing/verified states */
+  --color-seal: #40614c;
+  --color-seal-wash: #e6ede7;
+
+  --font-display: var(--font-spectral), Georgia, serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
 @layer base {
@@ -35,38 +51,119 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    background: var(--color-sand-50);
+    background: var(--color-paper);
     color: var(--color-ink-900);
     font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
   }
   h1,
   h2,
-  h3,
-  .display {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    letter-spacing: -0.011em;
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    line-height: 1.2;
   }
-  /* WCAG 2.1 AA: a visible focus ring everywhere, never removed (PRD 4.4) */
+  /* Register hand: every number that identifies a record is monospaced, because in a
+     court register it is. This is encoding, not ornament. */
+  code,
+  kbd,
+  .record {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
   :focus-visible {
-    outline: 2px solid var(--color-maroon-700);
+    outline: 2px solid var(--color-rule);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 1px;
   }
   ::selection {
-    background: var(--color-maroon-100);
+    background: var(--color-rule-wash);
+  }
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-200);
+    border: 3px solid var(--color-paper);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-300);
+  }
+}
+
+@layer components {
+  /*
+    THE SIGNATURE — the margin rule.
+    The double vermillion rule down the left of Indian legal pleading paper.
+    Applied once, in the app shell, so every screen sits on filed paper.
+  */
+  .margin-rule {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .margin-rule::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 0.375rem;
+    width: 4px;
+    border-left: 1px solid var(--color-rule);
+    border-right: 1px solid var(--color-rule);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  @media (min-width: 1024px) {
+    .margin-rule {
+      padding-left: 2.25rem;
+    }
+    .margin-rule::before {
+      left: 0.875rem;
+    }
+  }
+
+  /* An eyebrow above a title, the way a file names its section before its subject. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-400);
+  }
+
+  /* Hairline that separates a heading from its contents, as a ruled register does. */
+  .ruled {
+    border-bottom: 1px solid var(--color-paper-edge);
   }
 }
 
 @layer utilities {
-  /* thin ornamental rule under section headings */
-  .rule-accent::after {
-    content: '';
-    display: block;
-    width: 2.5rem;
-    height: 2px;
-    margin-top: 0.6rem;
-    background: var(--color-maroon-700);
+  /* One orchestrated page-load move, in CSS — no animation library for a fade. */
+  .enter {
+    animation: enter 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+  .enter-1 {
+    animation-delay: 0.04s;
+  }
+  .enter-2 {
+    animation-delay: 0.08s;
+  }
+  .enter-3 {
+    animation-delay: 0.12s;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -75,6 +172,7 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }

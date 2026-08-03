@@ -62,7 +62,7 @@ export function GlobalSearch() {
       />
 
       {open && q.trim().length >= 2 && (
-        <div className="absolute top-11 right-0 left-0 max-h-[70vh] overflow-y-auto rounded-md border border-sand-200 bg-white py-1.5 shadow-xl">
+        <div className="absolute top-11 right-0 left-0 max-h-[70vh] overflow-y-auto rounded-md border border-paper-edge bg-white py-1.5 shadow-xl">
           {groups.length === 0 ? (
             <p className="px-4 py-3 text-sm text-ink-400">No results for “{q}”.</p>
           ) : (
@@ -75,7 +75,7 @@ export function GlobalSearch() {
                   <Link
                     href={`/${mod === 'directory' ? 'directory' : mod}`}
                     onClick={() => setOpen(false)}
-                    className="text-[11px] text-maroon-700 hover:underline"
+                    className="text-[11px] text-rule hover:underline"
                   >
                     See all
                   </Link>
@@ -85,7 +85,7 @@ export function GlobalSearch() {
                     key={`${h.module}-${h.id}`}
                     href={h.link}
                     onClick={() => setOpen(false)}
-                    className="block px-3 py-2 hover:bg-sand-100"
+                    className="block px-3 py-2 hover:bg-paper-sunk"
                   >
                     <div className="truncate text-sm text-ink-900">{h.title}</div>
                     {h.snippet && <div className="truncate text-xs text-ink-400">{h.snippet}</div>}

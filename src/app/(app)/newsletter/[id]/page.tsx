@@ -16,28 +16,28 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
 
   return (
     <article className="mx-auto max-w-3xl">
-      <Link href="/newsletter" className="mb-4 inline-block text-sm text-maroon-700 hover:underline">
+      <Link href="/newsletter" className="mb-4 inline-block text-sm text-rule hover:underline">
         ← All issues
       </Link>
 
       <Card className="p-7">
-        <p className="text-xs font-medium tracking-wider text-maroon-700 uppercase">{i.issue_no}</p>
-        <h1 className="mt-2 font-serif text-3xl text-ink-900">{i.title}</h1>
+        <p className="text-xs font-medium tracking-wider text-rule uppercase">{i.issue_no}</p>
+        <h1 className="mt-2 font-display text-3xl text-ink-900">{i.title}</h1>
         <p className="mt-1 text-sm text-ink-500">
           {i.period} · published {day(i.published_at)}
         </p>
 
         {i.editorial && (
           <>
-            <hr className="my-5 border-sand-200" />
+            <hr className="my-5 border-paper-edge" />
             <p className="mb-1 text-xs tracking-wider text-ink-400 uppercase">Editorial note</p>
             <p className="text-[15px] leading-relaxed text-ink-700">{i.editorial}</p>
           </>
         )}
 
-        <hr className="my-5 border-sand-200" />
+        <hr className="my-5 border-paper-edge" />
 
-        <div className="flex h-96 flex-col items-center justify-center rounded border border-dashed border-sand-300 bg-sand-50 text-center">
+        <div className="flex h-96 flex-col items-center justify-center rounded border border-dashed border-paper-edge bg-paper text-center">
           <BookOpen size={32} className="text-ink-200" />
           <p className="mt-3 text-sm text-ink-500">{i.pdf_path?.split('/').pop()}</p>
           <p className="mt-1 max-w-sm text-xs text-ink-400">
@@ -48,7 +48,7 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
         {i.document_id && (
           <p className="mt-4 text-xs text-ink-400">
             Also filed in the{' '}
-            <Link href={`/documents/${i.document_id}`} className="text-maroon-700 hover:underline">
+            <Link href={`/documents/${i.document_id}`} className="text-rule hover:underline">
               Newsletter Archive
             </Link>{' '}
             of the document library.
@@ -64,7 +64,7 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
         </p>
         <Link
           href="/contact?category=general&subject=Newsletter+contribution"
-          className="mt-3 inline-block text-sm text-maroon-700 hover:underline"
+          className="mt-3 inline-block text-sm text-rule hover:underline"
         >
           Submit a contribution →
         </Link>

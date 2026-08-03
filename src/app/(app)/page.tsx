@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading } from '@/lib/ui'
+import { Badge, Card, Empty, SectionTitle } from '@/lib/ui'
 import { CATEGORY, day, ENTRY_COLOUR, ENTRY_TYPE, relativeDay, time } from '@/lib/format'
 import { Users, Mail, Landmark, FileText, ArrowRight } from 'lucide-react'
 
@@ -10,68 +10,63 @@ export const dynamic = 'force-dynamic'
 /* Each widget is its own async component behind its own Suspense boundary, so a slow or
    failing query degrades to a skeleton instead of taking the page down (PRD 3.1). */
 
-function Panel({ title, href, children }: { title: string; href?: string; children: React.ReactNode }) {
-  return (
-    <Card className="flex flex-col p-5">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-[15px] text-ink-900">{title}</h2>
-        {href && (
-          <Link href={href} className="text-xs text-maroon-700 hover:underline">
-            View all
-          </Link>
-        )}
-      </div>
-      <div className="flex-1">{children}</div>
-    </Card>
-  )
-}
-
 const Skeleton = () => (
   <Card className="p-5">
-    <div className="h-4 w-32 animate-pulse rounded bg-sand-200" />
+    <div className="h-3 w-28 animate-pulse rounded-[2px] bg-paper-sunk" />
     <div className="mt-4 space-y-2">
-      <div className="h-3 w-full animate-pulse rounded bg-sand-100" />
-      <div className="h-3 w-4/5 animate-pulse rounded bg-sand-100" />
+      <div className="h-2.5 w-full animate-pulse rounded-[2px] bg-paper-sunk" />
+      <div className="h-2.5 w-4/5 animate-pulse rounded-[2px] bg-paper-sunk" />
     </div>
   </Card>
 )
 
 async function Announcements() {
   const supabase = await db()
+  const now = new Date().toISOString()
   const { data } = await supabase
     .from('announcements')
-    .select('id, title, category, priority, pinned, publish_at')
+    .select('id, title, body, category, priority, pinned, publish_at')
     .eq('status', 'published')
-    .lte('publish_at', new Date().toISOString())
-    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+    .lte('publish_at', now)
+    .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('pinned', { ascending: false })
     .order('publish_at', { ascending: false })
     .limit(3)
 
   return (
-    <Panel title="Latest announcements" href="/announcements">
+    <Card className="p-5">
+      <SectionTitle href="/announcements">Latest notices</SectionTitle>
       {!data?.length ? (
-        <Empty>No announcements have been published yet.</Empty>
+        <Empty>No notices have been published yet.</Empty>
       ) : (
-        <ul className="divide-y divide-sand-100">
+        <ul className="divide-y divide-paper-edge">
           {data.map((a) => (
-            <li key={a.id} className="py-2.5 first:pt-0 last:pb-0">
+            <li key={a.id} className="py-3 first:pt-0 last:pb-0">
               <Link href={`/announcements/${a.id}`} className="group block">
-                <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
                   {a.pinned && <Badge tone="maroon">Pinned</Badge>}
                   <Badge tone={a.category === 'condolence' ? 'neutral' : 'navy'}>
                     {CATEGORY[a.category] ?? a.category}
                   </Badge>
                   {a.priority === 'urgent' && <Badge tone="maroon">Urgent</Badge>}
+                  <span className="ml-auto font-mono text-[10.5px] text-ink-300">
+                    {day(a.publish_at)}
+                  </span>
                 </div>
-                <p className="text-sm leading-snug text-ink-800 group-hover:text-maroon-700">{a.title}</p>
-                <p className="mt-0.5 text-xs text-ink-400">{day(a.publish_at)}</p>
+                <p
+                  className={`text-[14.5px] leading-snug text-ink-800 group-hover:text-rule ${
+                    a.category === 'condolence' ? 'font-display' : ''
+                  }`}
+                >
+                  {a.title}
+                </p>
+                <p className="mt-1 line-clamp-1 text-[12.5px] text-ink-400">{a.body}</p>
               </Link>
             </li>
           ))}
         </ul>
       )}
-    </Panel>
+    </Card>
   )
 }
 
@@ -89,21 +84,22 @@ async function ThisWeek() {
     .limit(6)
 
   return (
-    <Panel title="Today & this week" href="/calendar">
+    <Card className="p-5">
+      <SectionTitle href="/calendar">Today &amp; this week</SectionTitle>
       {!data?.length ? (
-        <Empty>Nothing in the calendar for the next seven days.</Empty>
+        <Empty>Nothing listed for the next seven days.</Empty>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {data.map((e) => (
-            <li key={e.id} className="flex items-start gap-3">
+            <li key={e.id} className="flex items-start gap-2.5">
               <span
-                className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium ${ENTRY_COLOUR[e.entry_type]}`}
+                className={`mt-px shrink-0 rounded-[2px] border px-1.5 py-px font-mono text-[9.5px] uppercase ${ENTRY_COLOUR[e.entry_type]}`}
               >
                 {ENTRY_TYPE[e.entry_type]?.split(' ')[0] ?? 'Other'}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm text-ink-800">{e.title}</p>
-                <p className="text-xs text-ink-400">
+                <p className="truncate text-[13.5px] leading-snug text-ink-800">{e.title}</p>
+                <p className="font-mono text-[10.5px] text-ink-400">
                   {relativeDay(e.starts_at)}
                   {!e.all_day && ` · ${time(e.starts_at)}`}
                 </p>
@@ -112,7 +108,7 @@ async function ThisWeek() {
           ))}
         </ul>
       )}
-    </Panel>
+    </Card>
   )
 }
 
@@ -126,24 +122,26 @@ async function UpcomingEvents({ memberId }: { memberId: string }) {
     .limit(3)
 
   return (
-    <Panel title="Upcoming events" href="/events">
+    <Card className="p-5">
+      <SectionTitle href="/events">Upcoming events</SectionTitle>
       {!data?.length ? (
         <Empty>No events are scheduled at present.</Empty>
       ) : (
-        <ul className="space-y-3">
+        <ul className="divide-y divide-paper-edge">
           {data.map((e) => {
             const mine = (e.event_rsvps as { status: string; member_id: string }[])?.find(
               (r) => r.member_id === memberId
             )
             return (
-              <li key={e.id}>
+              <li key={e.id} className="py-3 first:pt-0 last:pb-0">
                 <Link href={`/events/${e.id}`} className="group block">
-                  <p className="text-sm leading-snug text-ink-800 group-hover:text-maroon-700">{e.title}</p>
-                  <p className="mt-0.5 text-xs text-ink-400">
-                    {relativeDay(e.starts_at)} · {time(e.starts_at)}
-                    {e.venue && ` · ${e.venue}`}
+                  <p className="text-[13.5px] leading-snug text-ink-800 group-hover:text-rule">
+                    {e.title}
                   </p>
-                  <span className="mt-1.5 inline-block">
+                  <p className="mt-1 font-mono text-[10.5px] text-ink-400">
+                    {relativeDay(e.starts_at)} · {time(e.starts_at)}
+                  </p>
+                  <span className="mt-2 inline-block">
                     {mine ? (
                       <Badge tone={mine.status === 'attending' ? 'green' : 'neutral'}>
                         {mine.status === 'attending'
@@ -153,7 +151,7 @@ async function UpcomingEvents({ memberId }: { memberId: string }) {
                             : 'Not attending'}
                       </Badge>
                     ) : (
-                      <Badge tone="amber">RSVP pending</Badge>
+                      <Badge tone="amber">RSVP due</Badge>
                     )}
                   </span>
                 </Link>
@@ -162,7 +160,7 @@ async function UpcomingEvents({ memberId }: { memberId: string }) {
           })}
         </ul>
       )}
-    </Panel>
+    </Card>
   )
 }
 
@@ -176,19 +174,23 @@ async function RecentDocuments() {
     .limit(5)
 
   return (
-    <Panel title="Recently added documents" href="/documents">
+    <Card className="p-5">
+      <SectionTitle href="/documents">Recently filed</SectionTitle>
       {!data?.length ? (
-        <Empty>No documents have been uploaded yet.</Empty>
+        <Empty>No documents have been filed yet.</Empty>
       ) : (
         <ul className="space-y-2.5">
           {data.map((d) => (
             <li key={d.id} className="flex items-start gap-2.5">
-              <FileText size={15} className="mt-0.5 shrink-0 text-ink-300" />
+              <FileText size={14} className="mt-0.5 shrink-0 text-ink-300" />
               <div className="min-w-0">
-                <Link href={`/documents/${d.id}`} className="block truncate text-sm text-ink-800 hover:text-maroon-700">
+                <Link
+                  href={`/documents/${d.id}`}
+                  className="block truncate text-[13.5px] text-ink-800 hover:text-rule"
+                >
                   {d.title}
                 </Link>
-                <p className="text-xs text-ink-400">
+                <p className="font-mono text-[10.5px] text-ink-400">
                   {(d.folders as any)?.name ?? 'Uncategorised'} · {day(d.created_at)}
                 </p>
               </div>
@@ -196,7 +198,7 @@ async function RecentDocuments() {
           ))}
         </ul>
       )}
-    </Panel>
+    </Card>
   )
 }
 
@@ -211,23 +213,26 @@ async function CurrentNewsletter() {
     .maybeSingle()
 
   return (
-    <Panel title="Current newsletter" href="/newsletter">
+    <Card className="p-5">
+      <SectionTitle href="/newsletter">Current issue</SectionTitle>
       {!data ? (
         <Empty>No issue has been published yet.</Empty>
       ) : (
         <Link href={`/newsletter/${data.id}`} className="group flex gap-4">
-          <div className="flex h-24 w-18 shrink-0 flex-col items-center justify-center rounded-sm bg-ink-900 px-2 text-center">
-            <span className="font-serif text-[10px] leading-tight text-white/70">{data.period}</span>
-            <span className="mt-1 h-px w-6 bg-maroon-600" />
-            <span className="mt-1 font-serif text-[9px] text-white/50">{data.issue_no}</span>
+          <div className="flex h-26 w-19 shrink-0 flex-col items-center justify-center border border-ink-800 bg-ink-900 px-2 text-center">
+            <span className="font-display text-[10px] leading-tight text-white/75">{data.period}</span>
+            <span className="my-1.5 h-px w-6 bg-rule" />
+            <span className="font-mono text-[8px] text-white/40">{data.issue_no}</span>
           </div>
           <div className="min-w-0">
-            <p className="font-serif text-sm text-ink-900 group-hover:text-maroon-700">{data.title}</p>
-            <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-ink-400">{data.editorial}</p>
+            <p className="font-display text-[15px] text-ink-900 group-hover:text-rule">{data.title}</p>
+            <p className="mt-1.5 line-clamp-3 text-[12.5px] leading-relaxed text-ink-400">
+              {data.editorial}
+            </p>
           </div>
         </Link>
       )}
-    </Panel>
+    </Card>
   )
 }
 
@@ -240,36 +245,65 @@ const LINKS = [
 export default async function DashboardPage() {
   const member = (await me())!
   const supabase = await db()
-  const { data: unread } = await supabase.rpc('unread_count')
+  const now = new Date()
+
+  // The day's business, resolved together: this is the page's thesis, so it does not
+  // sit behind a Suspense boundary — the masthead must be right when it paints.
+  const [{ data: unread }, { count: weekEntries }, { count: openRsvps }] = await Promise.all([
+    supabase.rpc('unread_count'),
+    supabase
+      .from('calendar_entries')
+      .select('id', { count: 'exact', head: true })
+      .gte('starts_at', now.toISOString())
+      .lte('starts_at', new Date(now.getTime() + 7 * 864e5).toISOString()),
+    supabase
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .gte('starts_at', now.toISOString()),
+  ])
 
   const status = member.membership_status as string
+  const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening'
+
+  const business = [
+    [unread ?? 0, unread === 1 ? 'unread notice' : 'unread notices', '/announcements'],
+    [weekEntries ?? 0, 'entries this week', '/calendar'],
+    [openRsvps ?? 0, openRsvps === 1 ? 'event open' : 'events open', '/events'],
+  ] as const
 
   return (
     <>
-      <div className="mb-6">
-        <p className="text-xs tracking-wider text-ink-400 uppercase">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+      {/* Masthead — the day, then the day's business. */}
+      <header className="ruled mb-7 pb-5">
+        <p className="eyebrow">
+          {now.toLocaleDateString('en-IN', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })}
         </p>
-        <Heading>
-          {new Date().getHours() < 12
-            ? 'Good morning'
-            : new Date().getHours() < 17
-              ? 'Good afternoon'
-              : 'Good evening'}
-          , {member.full_name.split(' ')[0]}
-        </Heading>
-        <div className="-mt-1 flex flex-wrap items-center gap-2">
+
+        <h1 className="mt-2.5 text-[30px] text-ink-900 sm:text-[36px]">
+          {greeting}, {member.full_name.split(' ')[0]}
+        </h1>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge tone="navy">{member.enrolment_no}</Badge>
           <Badge tone={status === 'active' || status === 'life' ? 'green' : 'amber'}>{status}</Badge>
-          {!!unread && (
-            <Link href="/announcements">
-              <Badge tone="maroon">
-                {unread} unread {unread === 1 ? 'notice' : 'notices'}
-              </Badge>
-            </Link>
-          )}
         </div>
-      </div>
+
+        <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-4">
+          {business.map(([n, label, href]) => (
+            <Link key={label} href={href} className="group">
+              <dt className="font-display text-[28px] leading-none text-ink-900 group-hover:text-rule">
+                {String(n).padStart(2, '0')}
+              </dt>
+              <dd className="eyebrow mt-1.5">{label}</dd>
+            </Link>
+          ))}
+        </dl>
+      </header>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <div className="lg:col-span-1 xl:col-span-2">
@@ -291,17 +325,17 @@ export default async function DashboardPage() {
         </Suspense>
 
         <Card className="p-5">
-          <h2 className="mb-3 text-[15px] text-ink-900">Quick links</h2>
-          <ul className="space-y-1">
+          <SectionTitle>Quick links</SectionTitle>
+          <ul>
             {LINKS.map(({ href, label, icon: Icon }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="group flex items-center gap-2.5 rounded px-2 py-2 text-sm text-ink-700 hover:bg-sand-100"
+                  className="group flex items-center gap-2.5 border-b border-paper-edge py-2.5 text-[13.5px] text-ink-700 last:border-0 hover:text-rule"
                 >
-                  <Icon size={15} className="text-ink-400" />
+                  <Icon size={14} className="text-ink-300" />
                   {label}
-                  <ArrowRight size={13} className="ml-auto text-ink-200 group-hover:text-maroon-700" />
+                  <ArrowRight size={13} className="ml-auto text-ink-200 group-hover:text-rule" />
                 </Link>
               </li>
             ))}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { db } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading, Input, Select } from '@/lib/ui'
+import { db, me } from '@/lib/supabase/server'
+import { Badge, Button, Card, Empty, Heading, Input, Select } from '@/lib/ui'
 import { CATEGORY, VISIBILITY, ago, day } from '@/lib/format'
 import { Pin, Paperclip } from 'lucide-react'
 
@@ -14,6 +14,7 @@ export default async function AnnouncementsPage({
 }) {
   const sp = await searchParams
   const supabase = await db()
+  const viewer = (await me())!
   const now = new Date().toISOString()
 
   let query = supabase
@@ -37,7 +38,19 @@ export default async function AnnouncementsPage({
 
   return (
     <>
-      <Heading sub="Circulars, court notices and association communications.">Announcements</Heading>
+      <Heading
+        eyebrow="Association record"
+        sub="Circulars, court notices and communications of the Association."
+        aside={
+          viewer.canPublish ? (
+            <Link href="/manage/announcements/new">
+              <Button size="sm">New notice</Button>
+            </Link>
+          ) : null
+        }
+      >
+        Announcements
+      </Heading>
 
       <Card className="mb-4 p-4">
         <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -54,7 +67,7 @@ export default async function AnnouncementsPage({
             <button className="h-9 rounded bg-ink-900 px-4 text-sm font-medium text-white hover:bg-ink-800">Filter</button>
             <Link href="/announcements" className="text-sm text-ink-500 hover:underline">Clear</Link>
             <label className="ml-auto flex items-center gap-2 text-sm text-ink-600">
-              <input type="checkbox" name="archive" value="1" defaultChecked={!!sp.archive} className="accent-maroon-700" />
+              <input type="checkbox" name="archive" value="1" defaultChecked={!!sp.archive} className="accent-rule" />
               Include expired (archive)
             </label>
           </div>
@@ -77,9 +90,9 @@ export default async function AnnouncementsPage({
                   <Card
                     className={`p-5 transition-colors hover:border-ink-200 ${
                       condolence
-                        ? 'border-l-2 border-l-ink-300 bg-sand-50'
+                        ? 'border-l-2 border-l-ink-300 bg-paper'
                         : a.priority === 'urgent'
-                          ? 'border-l-2 border-l-maroon-700'
+                          ? 'border-l-2 border-l-rule'
                           : a.priority === 'important'
                             ? 'border-l-2 border-l-amber-500'
                             : ''
@@ -87,7 +100,7 @@ export default async function AnnouncementsPage({
                   >
                     <div className="mb-2 flex flex-wrap items-center gap-1.5">
                       {a.pinned && (
-                        <span className="flex items-center gap-1 text-[11px] font-medium text-maroon-700">
+                        <span className="flex items-center gap-1 text-[11px] font-medium text-rule">
                           <Pin size={11} /> Pinned
                         </span>
                       )}
@@ -97,11 +110,11 @@ export default async function AnnouncementsPage({
                       )}
                       {a.visibility !== 'all_members' && <Badge tone="amber">{VISIBILITY[a.visibility]}</Badge>}
                       {expired && <Badge>Expired</Badge>}
-                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-maroon-600" aria-label="Unread" />}
+                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-rule" aria-label="Unread" />}
                     </div>
 
                     <h2
-                      className={`text-[17px] leading-snug ${condolence ? 'font-serif text-ink-700' : 'text-ink-900'}`}
+                      className={`text-[17px] leading-snug ${condolence ? 'font-display text-ink-700' : 'text-ink-900'}`}
                     >
                       {a.title}
                     </h2>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { db } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading, Input, Select } from '@/lib/ui'
+import { db, me } from '@/lib/supabase/server'
+import { Badge, Button, Card, Empty, Heading, Input, Select } from '@/lib/ui'
 import { DESIGNATION, day } from '@/lib/format'
 import { Search } from 'lucide-react'
 
@@ -20,6 +20,7 @@ type Search = {
 export default async function DirectoryPage({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams
   const supabase = await db()
+  const viewer = (await me())!
 
   let query = supabase
     .from('members')
@@ -50,7 +51,17 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-      <Heading sub="All enrolled members of the Association. Contact details respect each member's privacy settings.">
+      <Heading
+        eyebrow="Association record"
+        sub="All enrolled members. Contact details respect each member's privacy settings."
+        aside={
+          viewer.isStaff ? (
+            <Link href="/manage/members/new">
+              <Button size="sm">Add member</Button>
+            </Link>
+          ) : null
+        }
+      >
         Member Directory
       </Heading>
 
@@ -103,7 +114,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
             <button type="submit" className="h-10 flex-1 rounded bg-ink-900 px-4 text-sm font-medium text-white hover:bg-ink-800">
               Apply
             </button>
-            <Link href="/directory" className="flex h-10 items-center rounded border border-sand-300 px-3 text-sm text-ink-600 hover:bg-sand-100">
+            <Link href="/directory" className="flex h-10 items-center rounded border border-paper-edge px-3 text-sm text-ink-600 hover:bg-paper-sunk">
               Clear
             </Link>
           </div>
@@ -117,12 +128,12 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
         <p className="text-sm text-ink-400">
           {error ? 'Could not load the directory.' : `${members?.length ?? 0} member${members?.length === 1 ? '' : 's'}`}
         </p>
-        <div className="flex gap-1 rounded border border-sand-300 p-0.5">
+        <div className="flex gap-1 rounded border border-paper-edge p-0.5">
           {[['', 'List'], ['card', 'Cards']].map(([v, label]) => (
             <Link
               key={label}
               href={{ pathname: '/directory', query: { ...sp, view: v || undefined } }}
-              className={`rounded px-2.5 py-1 text-xs ${(sp.view ?? '') === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-sand-100'}`}
+              className={`rounded px-2.5 py-1 text-xs ${(sp.view ?? '') === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-paper-sunk'}`}
             >
               {label}
             </Link>
@@ -156,7 +167,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
         <Card className="overflow-x-auto">
           <table className="w-full min-w-[46rem] text-sm">
             <thead>
-              <tr className="border-b border-sand-200 text-left text-xs tracking-wide text-ink-400 uppercase">
+              <tr className="border-b border-paper-edge text-left text-xs tracking-wide text-ink-400 uppercase">
                 <th className="px-4 py-2.5 font-medium">Member</th>
                 <th className="px-4 py-2.5 font-medium">Enrolment</th>
                 <th className="px-4 py-2.5 font-medium">Designation</th>
@@ -164,11 +175,11 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
                 <th className="px-4 py-2.5 font-medium">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-sand-100">
+            <tbody className="divide-y divide-paper-sunk">
               {members.map((m) => (
-                <tr key={m.id} className="hover:bg-sand-50">
+                <tr key={m.id} className="hover:bg-paper">
                   <td className="px-4 py-2.5">
-                    <Link href={`/directory/${m.id}`} className="flex items-center gap-2.5 font-medium text-ink-900 hover:text-maroon-700">
+                    <Link href={`/directory/${m.id}`} className="flex items-center gap-2.5 font-medium text-ink-900 hover:text-rule">
                       <Avatar name={m.full_name} url={m.photo_url} size={8} />
                       {m.full_name}
                     </Link>
@@ -208,7 +219,7 @@ export function Avatar({ name, url, size = 11 }: { name: string; url?: string | 
   ) : (
     <span
       aria-hidden
-      className="flex shrink-0 items-center justify-center rounded-full bg-ink-100 font-serif text-ink-600"
+      className="flex shrink-0 items-center justify-center rounded-full bg-ink-100 font-display text-ink-600"
       style={{ width: `${size * 4}px`, height: `${size * 4}px`, fontSize: `${size * 1.4}px` }}
     >
       {initials}

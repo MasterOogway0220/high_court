@@ -28,7 +28,7 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/committee" className="mb-4 inline-block text-sm text-maroon-700 hover:underline">
+      <Link href="/committee" className="mb-4 inline-block text-sm text-rule hover:underline">
         ← Bar Committee
       </Link>
 
@@ -38,7 +38,7 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
           <Badge>{c.kind === 'sub' ? 'Sub-committee' : 'Standing committee'}</Badge>
           {!(c.committee_terms as any)?.is_current && <Badge tone="amber">Archived</Badge>}
         </div>
-        <h1 className="mt-3 font-serif text-2xl text-ink-900">{c.name}</h1>
+        <h1 className="mt-3 font-display text-2xl text-ink-900">{c.name}</h1>
         {c.mandate && (
           <>
             <p className="mt-4 mb-1 text-xs tracking-wider text-ink-400 uppercase">Terms of reference</p>
@@ -56,11 +56,11 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {people.map((p) => (
               <li key={p.members.id}>
-                <Link href={`/directory/${p.members.id}`} className="flex items-center gap-3 rounded p-2 hover:bg-sand-50">
+                <Link href={`/directory/${p.members.id}`} className="flex items-center gap-3 rounded p-2 hover:bg-paper">
                   <Avatar name={p.members.full_name} url={p.members.photo_url} size={10} />
                   <div className="min-w-0">
                     <p className="truncate text-sm text-ink-900">{p.members.full_name}</p>
-                    <p className="text-xs text-maroon-700">{p.designation}</p>
+                    <p className="text-xs text-rule">{p.designation}</p>
                   </div>
                 </Link>
               </li>
@@ -79,7 +79,7 @@ export default async function CommitteeDetail({ params }: { params: Promise<{ id
               <li key={d.documents.id}>
                 <Link
                   href={`/documents/${d.documents.id}`}
-                  className="flex items-center gap-2.5 rounded border border-sand-200 px-3 py-2.5 text-sm text-ink-700 hover:border-ink-200"
+                  className="flex items-center gap-2.5 rounded border border-paper-edge px-3 py-2.5 text-sm text-ink-700 hover:border-ink-200"
                 >
                   <FileText size={14} className="text-ink-300" />
                   <span className="min-w-0 flex-1 truncate">{d.documents.title}</span>

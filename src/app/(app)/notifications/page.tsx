@@ -49,15 +49,15 @@ export default async function NotificationsPage() {
         <ul className="space-y-2">
           {data.map((n) => (
             <li key={n.id}>
-              <Card className={`p-4 ${n.read_at ? '' : 'border-l-2 border-l-maroon-700'}`}>
+              <Card className={`p-4 ${n.read_at ? '' : 'border-l-2 border-l-rule'}`}>
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       <Badge tone="navy">{n.kind}</Badge>
-                      {!n.read_at && <span className="h-1.5 w-1.5 rounded-full bg-maroon-600" aria-label="Unread" />}
+                      {!n.read_at && <span className="h-1.5 w-1.5 rounded-full bg-rule" aria-label="Unread" />}
                     </div>
                     {n.link ? (
-                      <Link href={n.link} className="text-sm font-medium text-ink-900 hover:text-maroon-700">
+                      <Link href={n.link} className="text-sm font-medium text-ink-900 hover:text-rule">
                         {n.title}
                       </Link>
                     ) : (
@@ -75,7 +75,7 @@ export default async function NotificationsPage() {
 
       <p className="mt-6 text-center text-sm text-ink-400">
         Manage which notifications reach you by email in{' '}
-        <Link href="/settings" className="text-maroon-700 hover:underline">
+        <Link href="/settings" className="text-rule hover:underline">
           Settings
         </Link>
         .

@@ -120,11 +120,11 @@ export default async function SettingsPage() {
           </p>
           <div className="space-y-3">
             <label className="flex items-center gap-2.5 text-sm text-ink-700">
-              <input type="checkbox" name="hide_mobile" defaultChecked={member.hide_mobile} className="accent-maroon-700" />
+              <input type="checkbox" name="hide_mobile" defaultChecked={member.hide_mobile} className="accent-rule" />
               Hide my mobile number from other members
             </label>
             <label className="flex items-center gap-2.5 text-sm text-ink-700">
-              <input type="checkbox" name="hide_email" defaultChecked={member.hide_email} className="accent-maroon-700" />
+              <input type="checkbox" name="hide_email" defaultChecked={member.hide_email} className="accent-rule" />
               Hide my email address from other members
             </label>
           </div>
@@ -143,7 +143,7 @@ export default async function SettingsPage() {
                   name={`pref_${v}`}
                   defaultChecked={v === 'urgent' ? true : enabled(v)}
                   disabled={v === 'urgent'}
-                  className="accent-maroon-700 disabled:opacity-50"
+                  className="accent-rule disabled:opacity-50"
                 />
                 {l}
                 {v === 'urgent' && <Badge tone="maroon">Always on</Badge>}
@@ -162,7 +162,7 @@ export default async function SettingsPage() {
           calendar — rotate it if it is ever shared by accident.
         </p>
         {token ? (
-          <code className="block overflow-x-auto rounded border border-sand-200 bg-sand-50 px-3 py-2 text-xs text-ink-600">
+          <code className="block overflow-x-auto rounded border border-paper-edge bg-paper px-3 py-2 text-xs text-ink-600">
             /api/ics/{token.token}
           </code>
         ) : (

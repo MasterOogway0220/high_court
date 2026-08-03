@@ -57,7 +57,7 @@ export function Rsvp({
 
   if (closed) {
     return (
-      <p className="rounded border border-sand-300 bg-sand-100 px-4 py-3 text-sm text-ink-500">
+      <p className="rounded border border-paper-edge bg-paper-sunk px-4 py-3 text-sm text-ink-500">
         RSVP for this event has closed.
       </p>
     )
@@ -107,7 +107,7 @@ export function Rsvp({
       )}
 
       {error && (
-        <p role="alert" className="rounded border border-maroon-200 bg-maroon-50 px-3 py-2 text-[13px] text-maroon-700">
+        <p role="alert" className="rounded border border-rule-soft bg-rule-wash px-3 py-2 text-[13px] text-rule">
           {error}
         </p>
       )}

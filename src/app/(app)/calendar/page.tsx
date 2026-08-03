@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading } from '@/lib/ui'
+import { Badge, Button, Card, Empty, Heading } from '@/lib/ui'
 import { ENTRY_COLOUR, ENTRY_TYPE, day, time } from '@/lib/format'
 import {
   addMonths, endOfMonth, endOfWeek, format, isSameDay, isSameMonth,
@@ -46,20 +46,32 @@ export default async function CalendarPage({
 
   return (
     <>
-      <Heading sub="Court holidays, association meetings, events and elections.">Calendar</Heading>
+      <Heading
+        eyebrow="Association record"
+        sub="Court holidays, meetings, events and elections."
+        aside={
+          viewer.canPublish ? (
+            <Link href="/manage/calendar_entries/new">
+              <Button size="sm">New entry</Button>
+            </Link>
+          ) : null
+        }
+      >
+        Calendar
+      </Heading>
 
       <Card className="mb-4 flex flex-wrap items-center gap-3 p-3">
         <div className="flex items-center gap-1">
           <Link
             href={{ query: { ...sp, m: monthQ(addMonths(cursor, -1)) } }}
-            className="rounded border border-sand-300 px-2.5 py-1.5 text-sm text-ink-600 hover:bg-sand-100"
+            className="rounded border border-paper-edge px-2.5 py-1.5 text-sm text-ink-600 hover:bg-paper-sunk"
             aria-label="Previous month"
           >
             ←
           </Link>
           <Link
             href={{ query: { ...sp, m: monthQ(addMonths(cursor, 1)) } }}
-            className="rounded border border-sand-300 px-2.5 py-1.5 text-sm text-ink-600 hover:bg-sand-100"
+            className="rounded border border-paper-edge px-2.5 py-1.5 text-sm text-ink-600 hover:bg-paper-sunk"
             aria-label="Next month"
           >
             →
@@ -73,7 +85,7 @@ export default async function CalendarPage({
             name="type"
             defaultValue={sp.type ?? ''}
             aria-label="Filter by type"
-            className="h-8 rounded border border-sand-300 bg-white px-2 text-sm"
+            className="h-8 rounded border border-paper-edge bg-white px-2 text-sm"
           >
             <option value="">All types</option>
             {Object.entries(ENTRY_TYPE).map(([v, l]) => (
@@ -83,7 +95,7 @@ export default async function CalendarPage({
           <button className="h-8 rounded bg-ink-900 px-3 text-xs font-medium text-white">Filter</button>
         </form>
 
-        <div className="flex gap-1 rounded border border-sand-300 p-0.5">
+        <div className="flex gap-1 rounded border border-paper-edge p-0.5">
           {[['', 'Month'], ['list', 'List']].map(([v, label]) => (
             <Link
               key={label}
@@ -99,7 +111,7 @@ export default async function CalendarPage({
       {/* month grid on desktop, list default on mobile (PRD 3.4) */}
       {!listMode && (
         <Card className="hidden overflow-hidden sm:block">
-          <div className="grid grid-cols-7 border-b border-sand-200 bg-sand-50">
+          <div className="grid grid-cols-7 border-b border-paper-edge bg-paper">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
               <div key={d} className="px-2 py-2 text-center text-[11px] font-medium tracking-wide text-ink-400 uppercase">
                 {d}
@@ -114,11 +126,11 @@ export default async function CalendarPage({
               return (
                 <div
                   key={d.toISOString()}
-                  className={`min-h-24 border-r border-b border-sand-100 p-1.5 ${inMonth ? '' : 'bg-sand-50/60'}`}
+                  className={`min-h-24 border-r border-b border-paper-sunk p-1.5 ${inMonth ? '' : 'bg-paper/60'}`}
                 >
                   <span
                     className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                      today ? 'bg-maroon-700 font-medium text-white' : inMonth ? 'text-ink-600' : 'text-ink-200'
+                      today ? 'bg-rule font-medium text-white' : inMonth ? 'text-ink-600' : 'text-ink-200'
                     }`}
                   >
                     {format(d, 'd')}
@@ -152,7 +164,7 @@ export default async function CalendarPage({
                 <Card className="flex gap-4 p-4">
                   <div className="w-12 shrink-0 text-center">
                     <p className="text-[10px] tracking-wide text-ink-400 uppercase">{format(new Date(e.starts_at), 'MMM')}</p>
-                    <p className="font-serif text-xl text-ink-900">{format(new Date(e.starts_at), 'd')}</p>
+                    <p className="font-display text-xl text-ink-900">{format(new Date(e.starts_at), 'd')}</p>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex flex-wrap items-center gap-1.5">
@@ -161,7 +173,7 @@ export default async function CalendarPage({
                       </span>
                     </div>
                     {e.event_id ? (
-                      <Link href={`/events/${e.event_id}`} className="text-sm text-ink-900 hover:text-maroon-700">
+                      <Link href={`/events/${e.event_id}`} className="text-sm text-ink-900 hover:text-rule">
                         {e.title}
                       </Link>
                     ) : (
@@ -191,7 +203,7 @@ export default async function CalendarPage({
           </p>
         </div>
         {tokenRow && (
-          <code className="max-w-full truncate rounded border border-sand-200 bg-sand-50 px-2 py-1 text-[11px] text-ink-500">
+          <code className="max-w-full truncate rounded border border-paper-edge bg-paper px-2 py-1 text-[11px] text-ink-500">
             /api/ics/{tokenRow.token}
           </code>
         )}

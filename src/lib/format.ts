@@ -44,13 +44,13 @@ export const ENTRY_TYPE: Record<string, string> = {
 
 /** Calendar colour-coding — holidays must read differently at a glance (PRD 3.4). */
 export const ENTRY_COLOUR: Record<string, string> = {
-  court_holiday: 'bg-maroon-100 text-maroon-900 border-maroon-200',
+  court_holiday: 'bg-rule-wash text-rule border-rule-soft',
   association_meeting: 'bg-ink-100 text-ink-800 border-ink-200',
   gbm_egm: 'bg-amber-100 text-amber-900 border-amber-200',
   event: 'bg-emerald-100 text-emerald-900 border-emerald-200',
   election: 'bg-violet-100 text-violet-900 border-violet-200',
   hearing_of_interest: 'bg-sky-100 text-sky-900 border-sky-200',
-  other: 'bg-sand-200 text-ink-700 border-sand-300',
+  other: 'bg-paper-edge text-ink-700 border-paper-edge',
 }
 
 export const EVENT_TYPE: Record<string, string> = {

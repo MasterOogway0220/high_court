@@ -40,7 +40,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
 
   return (
     <>
-      <Link href="/directory" className="mb-4 inline-block text-sm text-maroon-700 hover:underline">
+      <Link href="/directory" className="mb-4 inline-block text-sm text-rule hover:underline">
         ← Back to directory
       </Link>
 
@@ -49,7 +49,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
           <div className="flex flex-col gap-5 sm:flex-row">
             <Avatar name={m.full_name} url={m.photo_url} size={24} />
             <div className="min-w-0 flex-1">
-              <h1 className="font-serif text-2xl text-ink-900">{m.full_name}</h1>
+              <h1 className="font-display text-2xl text-ink-900">{m.full_name}</h1>
               <p className="mt-1 text-sm text-ink-600">{DESIGNATION[m.designation]}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 <Badge tone="navy">{m.enrolment_no}</Badge>
@@ -74,7 +74,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
 
           {m.bio && (
             <>
-              <hr className="my-5 border-sand-200" />
+              <hr className="my-5 border-paper-edge" />
               <p className="text-[15px] leading-relaxed text-ink-700">{m.bio}</p>
             </>
           )}
@@ -112,7 +112,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               <li className="flex gap-2.5">
                 <Phone size={15} className="mt-0.5 shrink-0 text-ink-300" />
                 {showMobile ? (
-                  <a href={`tel:${m.mobile}`} className="text-ink-700 hover:text-maroon-700">{m.mobile}</a>
+                  <a href={`tel:${m.mobile}`} className="text-ink-700 hover:text-rule">{m.mobile}</a>
                 ) : (
                   <span className="flex items-center gap-1.5 text-ink-300">
                     <EyeOff size={13} /> Hidden by member
@@ -122,7 +122,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               <li className="flex gap-2.5">
                 <Mail size={15} className="mt-0.5 shrink-0 text-ink-300" />
                 {showEmail ? (
-                  <a href={`mailto:${m.email}`} className="break-all text-ink-700 hover:text-maroon-700">{m.email}</a>
+                  <a href={`mailto:${m.email}`} className="break-all text-ink-700 hover:text-rule">{m.email}</a>
                 ) : (
                   <span className="flex items-center gap-1.5 text-ink-300">
                     <EyeOff size={13} /> Hidden by member
@@ -131,7 +131,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
               </li>
             </ul>
             {viewer.canPublish && (m.hide_mobile || m.hide_email) && (
-              <p className="mt-3 border-t border-sand-100 pt-3 text-[11px] text-ink-400">
+              <p className="mt-3 border-t border-paper-sunk pt-3 text-[11px] text-ink-400">
                 Shown in full because you are an office bearer.
               </p>
             )}
@@ -149,7 +149,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
                       const c = p.committees as any
                       return (
                         <li key={i}>
-                          <Link href={`/committee/${c.id}`} className="text-sm text-ink-800 hover:text-maroon-700">
+                          <Link href={`/committee/${c.id}`} className="text-sm text-ink-800 hover:text-rule">
                             {c.name}
                           </Link>
                           <p className="text-xs text-ink-400">
@@ -181,7 +181,7 @@ export default async function MemberProfile({ params }: { params: Promise<{ id: 
 
           {viewer.id === m.id && (
             <Link href="/settings" className="block">
-              <Card className="p-4 text-center text-sm text-maroon-700 transition-colors hover:border-maroon-200">
+              <Card className="p-4 text-center text-sm text-rule transition-colors hover:border-rule-soft">
                 Edit my profile
               </Card>
             </Link>

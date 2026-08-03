@@ -16,83 +16,107 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 
-const MAIN = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+// Grouped the way a file is indexed: what is happening now, what is on record,
+// and who the Association is. The grouping carries meaning, so it earns its rules.
+const GROUPS: { label: string; items: { href: string; label: string; icon: typeof Users }[] }[] = [
+  {
+    label: 'Current',
+    items: [
+      { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/announcements', label: 'Announcements', icon: Megaphone },
+      { href: '/calendar', label: 'Calendar', icon: CalendarDays },
+      { href: '/events', label: 'Events', icon: CalendarCheck },
+    ],
+  },
+  {
+    label: 'Records',
+    items: [
+      { href: '/directory', label: 'Directory', icon: Users },
+      { href: '/documents', label: 'Documents', icon: FolderOpen },
+      { href: '/newsletter', label: 'Newsletter', icon: BookOpen },
+    ],
+  },
+  {
+    label: 'Association',
+    items: [
+      { href: '/committee', label: 'Bar Committee', icon: Landmark },
+      { href: '/contact', label: 'Contact', icon: Mail },
+    ],
+  },
+]
+
+const MOBILE = [
+  { href: '/', label: 'Home', icon: LayoutDashboard },
+  { href: '/announcements', label: 'Notices', icon: Megaphone },
   { href: '/directory', label: 'Directory', icon: Users },
-  { href: '/announcements', label: 'Announcements', icon: Megaphone },
-  { href: '/calendar', label: 'Calendar', icon: CalendarDays },
   { href: '/events', label: 'Events', icon: CalendarCheck },
-  { href: '/documents', label: 'Documents', icon: FolderOpen },
-  { href: '/newsletter', label: 'Newsletter', icon: BookOpen },
-  { href: '/committee', label: 'Bar Committee', icon: Landmark },
-  { href: '/contact', label: 'Contact', icon: Mail },
+  { href: '/documents', label: 'Files', icon: FolderOpen },
 ]
 
 export function Nav({ canPublish, isStaff }: { canPublish: boolean; isStaff: boolean }) {
   const path = usePathname()
   const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href))
 
+  const item = (href: string, label: string, Icon: typeof Users) => (
+    <li key={href}>
+      <Link
+        href={href}
+        aria-current={active(href) ? 'page' : undefined}
+        className={cn(
+          'group relative flex items-center gap-2.5 py-1.5 pl-3 text-[13.5px] transition-colors',
+          active(href) ? 'font-medium text-ink-900' : 'text-ink-500 hover:text-ink-900'
+        )}
+      >
+        {/* the current entry is marked in the margin, as a file is */}
+        <span
+          className={cn(
+            'absolute top-1/2 left-0 h-4 w-[2px] -translate-y-1/2 transition-colors',
+            active(href) ? 'bg-rule' : 'bg-transparent group-hover:bg-ink-200'
+          )}
+        />
+        <Icon size={15} className={active(href) ? 'text-rule' : 'text-ink-300'} />
+        {label}
+      </Link>
+    </li>
+  )
+
   return (
     <>
-      {/* desktop rail */}
-      <nav aria-label="Sections" className="hidden w-52 shrink-0 lg:block">
-        <ul className="sticky top-20 space-y-0.5">
-          {MAIN.map(({ href, label, icon: Icon }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active(href) ? 'page' : undefined}
-                className={cn(
-                  'flex items-center gap-2.5 rounded px-3 py-2 text-sm transition-colors',
-                  active(href)
-                    ? 'bg-white font-medium text-ink-900 shadow-[0_1px_2px_rgba(22,36,63,0.05)]'
-                    : 'text-ink-600 hover:bg-sand-100 hover:text-ink-900'
-                )}
-              >
-                <Icon size={16} className={active(href) ? 'text-maroon-700' : 'text-ink-400'} />
-                {label}
-              </Link>
-            </li>
+      <nav aria-label="Sections" className="hidden w-48 shrink-0 lg:block">
+        <div className="sticky top-22 space-y-6">
+          {GROUPS.map((g) => (
+            <div key={g.label}>
+              <p className="eyebrow ruled mb-2 pb-1.5">{g.label}</p>
+              <ul>{g.items.map((i) => item(i.href, i.label, i.icon))}</ul>
+            </div>
           ))}
 
           {(canPublish || isStaff) && (
-            <li className="pt-4">
-              <Link
-                href="/admin"
-                aria-current={active('/admin') ? 'page' : undefined}
-                className={cn(
-                  'flex items-center gap-2.5 rounded px-3 py-2 text-sm transition-colors',
-                  active('/admin')
-                    ? 'bg-white font-medium text-ink-900 shadow-[0_1px_2px_rgba(22,36,63,0.05)]'
-                    : 'text-ink-600 hover:bg-sand-100 hover:text-ink-900'
-                )}
-              >
-                <ShieldCheck size={16} className={active('/admin') ? 'text-maroon-700' : 'text-ink-400'} />
-                Administration
-              </Link>
-            </li>
+            <div>
+              <p className="eyebrow ruled mb-2 pb-1.5">Office</p>
+              <ul>{item('/admin', 'Administration', ShieldCheck)}</ul>
+            </div>
           )}
-        </ul>
+        </div>
       </nav>
 
-      {/* mobile bar */}
       <nav
         aria-label="Sections"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-sand-200 bg-white/95 backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-paper-edge bg-paper-raised/95 backdrop-blur lg:hidden"
       >
-        <ul className="flex overflow-x-auto">
-          {MAIN.map(({ href, label, icon: Icon }) => (
+        <ul className="flex">
+          {MOBILE.map(({ href, label, icon: Icon }) => (
             <li key={href} className="flex-1">
               <Link
                 href={href}
                 aria-current={active(href) ? 'page' : undefined}
                 className={cn(
-                  'flex min-w-[4.5rem] flex-col items-center gap-1 px-2 py-2.5 text-[10px]',
-                  active(href) ? 'text-maroon-700' : 'text-ink-400'
+                  'flex flex-col items-center gap-1 py-2.5 font-mono text-[9.5px] tracking-wide uppercase',
+                  active(href) ? 'text-rule' : 'text-ink-400'
                 )}
               >
-                <Icon size={18} />
-                {label.split(' ')[0]}
+                <Icon size={17} />
+                {label}
               </Link>
             </li>
           ))}

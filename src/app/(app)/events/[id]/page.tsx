@@ -40,7 +40,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <Link href="/events" className="mb-4 inline-block text-sm text-maroon-700 hover:underline">
+      <Link href="/events" className="mb-4 inline-block text-sm text-rule hover:underline">
         ← All events
       </Link>
 
@@ -53,7 +53,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               </Badge>
             </div>
             <div className="p-6">
-              <h1 className="font-serif text-2xl leading-tight text-ink-900">{e.title}</h1>
+              <h1 className="font-display text-2xl leading-tight text-ink-900">{e.title}</h1>
               <div className="mt-4 grid gap-2.5 text-sm text-ink-600 sm:grid-cols-2">
                 <p className="flex items-center gap-2">
                   <CalendarDays size={15} className="text-ink-300" />
@@ -76,11 +76,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 </p>
               </div>
 
-              <hr className="my-5 border-sand-200" />
+              <hr className="my-5 border-paper-edge" />
               <p className="text-[15px] leading-relaxed whitespace-pre-wrap text-ink-800">{e.description}</p>
 
               {e.outcome_note && (
-                <div className="mt-6 rounded border border-sand-200 bg-sand-50 p-4">
+                <div className="mt-6 rounded border border-paper-edge bg-paper p-4">
                   <p className="mb-1 text-xs tracking-wider text-ink-400 uppercase">Outcome</p>
                   <p className="text-sm leading-relaxed text-ink-700">{e.outcome_note}</p>
                 </div>
@@ -100,7 +100,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                   {going.map((r) => (
                     <li key={r.member_id} className="flex items-center gap-2.5">
                       <Avatar name={r.members.full_name} url={r.members.photo_url} size={8} />
-                      <Link href={`/directory/${r.member_id}`} className="truncate text-sm text-ink-700 hover:text-maroon-700">
+                      <Link href={`/directory/${r.member_id}`} className="truncate text-sm text-ink-700 hover:text-rule">
                         {r.members.full_name}
                         {r.guests > 0 && <span className="text-ink-400"> +{r.guests}</span>}
                       </Link>
@@ -109,7 +109,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 </ul>
               )}
               {!!waiting.length && (
-                <p className="mt-4 border-t border-sand-100 pt-3 text-xs text-ink-400">
+                <p className="mt-4 border-t border-paper-sunk pt-3 text-xs text-ink-400">
                   {waiting.length} on the waitlist.
                 </p>
               )}
@@ -136,9 +136,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           {e.capacity && (
             <Card className="p-5">
               <p className="mb-2 text-xs tracking-wider text-ink-400 uppercase">Capacity</p>
-              <div className="h-2 overflow-hidden rounded-full bg-sand-200">
+              <div className="h-2 overflow-hidden rounded-full bg-paper-edge">
                 <div
-                  className="h-full rounded-full bg-maroon-700 transition-[width]"
+                  className="h-full rounded-full bg-rule transition-[width]"
                   style={{ width: `${Math.min(100, (seats / e.capacity) * 100)}%` }}
                 />
               </div>

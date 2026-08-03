@@ -47,7 +47,7 @@ export default async function CommitteePage({
             className={`rounded-full border px-3 py-1 text-sm ${
               t.id === term?.id
                 ? 'border-ink-900 bg-ink-900 text-white'
-                : 'border-sand-300 text-ink-600 hover:bg-sand-100'
+                : 'border-paper-edge text-ink-600 hover:bg-paper-sunk'
             }`}
           >
             {t.label}
@@ -72,17 +72,17 @@ export default async function CommitteePage({
                       <Card className="mb-4 flex flex-col gap-5 p-6 sm:flex-row">
                         <Avatar name={president.members.full_name} url={president.members.photo_url} size={20} />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium tracking-wider text-maroon-700 uppercase">
+                          <p className="text-xs font-medium tracking-wider text-rule uppercase">
                             {president.designation}
                           </p>
                           <Link
                             href={`/directory/${president.members.id}`}
-                            className="mt-1 block font-serif text-xl text-ink-900 hover:text-maroon-700"
+                            className="mt-1 block font-display text-xl text-ink-900 hover:text-rule"
                           >
                             {president.members.full_name}
                           </Link>
                           <p className="mt-0.5 text-sm text-ink-400">{president.members.enrolment_no}</p>
-                          <blockquote className="mt-4 border-l-2 border-maroon-200 pl-4 text-[15px] leading-relaxed text-ink-600 italic">
+                          <blockquote className="mt-4 border-l-2 border-rule-soft pl-4 text-[15px] leading-relaxed text-ink-600 italic">
                             The Association exists to protect the dignity of the Bar and the interests of every
                             member of it. This dashboard is a step towards making that work visible and accessible
                             to all of you.
@@ -153,8 +153,8 @@ function MemberCard({ p }: { p: any }) {
       <div className="flex justify-center">
         <Avatar name={p.members.full_name} url={p.members.photo_url} size={14} />
       </div>
-      <p className="mt-2.5 text-[11px] font-medium tracking-wide text-maroon-700 uppercase">{p.designation}</p>
-      <Link href={`/directory/${p.members.id}`} className="mt-1 block text-sm text-ink-900 hover:text-maroon-700">
+      <p className="mt-2.5 text-[11px] font-medium tracking-wide text-rule uppercase">{p.designation}</p>
+      <Link href={`/directory/${p.members.id}`} className="mt-1 block text-sm text-ink-900 hover:text-rule">
         {p.members.full_name}
       </Link>
       <p className="mt-0.5 text-xs text-ink-400">{p.members.enrolment_no}</p>

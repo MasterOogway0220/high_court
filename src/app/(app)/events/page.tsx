@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { db } from '@/lib/supabase/server'
-import { Badge, Card, Empty, Heading } from '@/lib/ui'
+import { db, me } from '@/lib/supabase/server'
+import { Badge, Button, Card, Empty, Heading } from '@/lib/ui'
 import { EVENT_TYPE, day, time } from '@/lib/format'
 import { MapPin, Users } from 'lucide-react'
 
@@ -15,6 +15,7 @@ export default async function EventsPage({
   const { tab } = await searchParams
   const past = tab === 'archive'
   const supabase = await db()
+  const viewer = (await me())!
   const now = new Date().toISOString()
 
   const { data } = await supabase
@@ -26,9 +27,21 @@ export default async function EventsPage({
 
   return (
     <>
-      <Heading sub="Seminars, training, meetings and association gatherings.">Events</Heading>
+      <Heading
+        eyebrow="Association record"
+        sub="Seminars, training, meetings and gatherings of the Association."
+        aside={
+          viewer.canPublish ? (
+            <Link href="/manage/events/new">
+              <Button size="sm">New event</Button>
+            </Link>
+          ) : null
+        }
+      >
+        Events
+      </Heading>
 
-      <div className="mb-4 flex gap-1 border-b border-sand-200">
+      <div className="mb-4 flex gap-1 border-b border-paper-edge">
         {[
           ['', 'Upcoming'],
           ['archive', 'Archive'],
@@ -38,7 +51,7 @@ export default async function EventsPage({
             href={v ? `/events?tab=${v}` : '/events'}
             className={`-mb-px border-b-2 px-4 py-2 text-sm ${
               (tab ?? '') === v
-                ? 'border-maroon-700 font-medium text-ink-900'
+                ? 'border-rule font-medium text-ink-900'
                 : 'border-transparent text-ink-400 hover:text-ink-700'
             }`}
           >
@@ -65,7 +78,7 @@ export default async function EventsPage({
                     </Badge>
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    <p className="text-xs font-medium tracking-wide text-maroon-700 uppercase">
+                    <p className="text-xs font-medium tracking-wide text-rule uppercase">
                       {day(e.starts_at)} · {time(e.starts_at)}
                     </p>
                     <h2 className="mt-1.5 text-[15px] leading-snug text-ink-900">{e.title}</h2>

@@ -40,7 +40,7 @@ export function ContactForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Enrolment number">
-          <Input value={enrolmentNo} readOnly className="bg-sand-50 text-ink-500" />
+          <Input value={enrolmentNo} readOnly className="bg-paper text-ink-500" />
         </Field>
         <Field label="Category">
           <Select name="category" defaultValue={defaultCategory ?? 'general'} required>
@@ -60,7 +60,7 @@ export function ContactForm({
       </Field>
 
       {error && (
-        <p role="alert" className="rounded border border-maroon-200 bg-maroon-50 px-3 py-2 text-[13px] text-maroon-700">
+        <p role="alert" className="rounded border border-rule-soft bg-rule-wash px-3 py-2 text-[13px] text-rule">
           {error}
         </p>
       )}
