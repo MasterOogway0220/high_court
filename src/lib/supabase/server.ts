@@ -1,8 +1,22 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Fail with the name of the missing variable. Without this, an unset value reaches
+// Supabase as `undefined` and surfaces as a generic fetch or "Invalid API key" error
+// that says nothing about configuration — which is the wrong place to start looking.
+function required(name: string) {
+  const v = process.env[name]
+  if (!v) {
+    throw new Error(
+      `${name} is not set. Add it in Vercel → Project Settings → Environment Variables, ` +
+        `or in .env.local for local development.`
+    )
+  }
+  return v
+}
+
+const url = required('NEXT_PUBLIC_SUPABASE_URL')
+const anon = required('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 
 /** Request-scoped client. RLS applies — this is the only client the app should use. */
 export async function db() {

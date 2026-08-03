@@ -69,6 +69,30 @@ see [Deviations](#deviations-from-the-prd).
    npm run dev
    ```
 
+## Deploying to Vercel
+
+`.env.local` is gitignored, so Vercel has none of it. Set these in **Project Settings →
+Environment Variables** before deploying, or the build fails naming the missing variable:
+
+| Variable | Needed for |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | everything |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | everything |
+| `SUPABASE_SERVICE_ROLE_KEY` | the `.ics` calendar feed only |
+| `DEMO_AUTO_LOGIN` | opening the dashboard without a sign-in step |
+| `DEMO_AUTO_LOGIN_PASSWORD` | as above |
+
+`DATABASE_URL` and `DIRECT_URL` are **not** needed at runtime — Prisma is only used
+locally for schema work. Leave them out of Vercel.
+
+A Vercel `404: NOT_FOUND` at the project domain means no deployment is serving that
+route — usually a failed build, a Root Directory pointing at a folder that does not
+exist, or a project created against an empty repository. Check the Deployments tab: if
+the list is empty or the latest build is red, the 404 is a symptom, not the fault.
+
+Do not set `DEMO_AUTO_LOGIN` on a production deployment. It signs every visitor in as
+the named account.
+
 ### On Prisma and RLS
 
 Prisma manages the schema; it does **not** serve member-facing queries.
