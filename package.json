@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:ping": "node scripts/db-ping.mjs",
+    "db:apply": "node scripts/db-apply.mjs",
+    "db:sync": "prisma db pull && prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^7.9.1",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.111.0",
     "@tanstack/react-query": "^5.101.4",
@@ -20,6 +24,7 @@
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },
@@ -28,8 +33,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "postgres": "^3.4.9",
+    "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

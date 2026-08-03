@@ -17,32 +17,74 @@ see [Deviations](#deviations-from-the-prd).
 
 ## Setup
 
-1. **Run the migrations.** In the Supabase dashboard → SQL Editor, run in order:
-
-   ```
-   supabase/migrations/001_schema.sql     tables, enums, search indexes, audit triggers
-   supabase/migrations/002_rls.sql        row-level security — the permission model
-   supabase/migrations/003_functions.sql  login resolution, RSVP/waitlist, global search
-   supabase/migrations/004_seed.sql       demo members, notices, events, documents
-   supabase/migrations/005_check.sql      asserts the visibility rules actually hold
-   ```
-
-   `005` prints `RLS visibility checks passed.` and raises an exception if they do not.
-
-2. **Add your keys** to `.env.local` (Supabase → Project Settings → API Keys):
+1. **Fill in `.env.local`.** Supabase → Project Settings → API Keys, and → Database for
+   the password:
 
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon / public key>
    SUPABASE_SERVICE_ROLE_KEY=<service_role key>
+
+   DATABASE_URL="postgresql://postgres.<ref>:<password>@<pooler-host>:6543/postgres?pgbouncer=true"
+   DIRECT_URL="postgresql://postgres.<ref>:<password>@<pooler-host>:5432/postgres"
    ```
 
-3. **Run it.**
+   Use the **pooler** host, not `db.<ref>.supabase.co` — the direct host is IPv6-only and
+   unreachable from an IPv4-only network. Copy the exact string from Supabase → Connect →
+   ORMs → Prisma; the pooler region is not always the project's region.
+
+2. **Check the connection.** This tells you precisely what is wrong if it fails:
+
+   ```bash
+   npm run db:ping
+   ```
+
+3. **Apply the schema.**
+
+   ```bash
+   npm run db:apply
+   ```
+
+   Runs `supabase/migrations/*.sql` in order through the session pooler, then introspects
+   the result with `prisma db pull` and regenerates the client:
+
+   ```
+   001_schema.sql     tables, enums, search indexes, audit triggers
+   002_rls.sql        row-level security — the permission model
+   003_functions.sql  login resolution, RSVP/waitlist, global search
+   004_seed.sql       demo members, notices, events, documents
+   005_check.sql      asserts the visibility rules actually hold
+   ```
+
+   `005` raises an exception if a general member can see restricted content. A clean run
+   means the permission model is intact.
+
+   You can equally paste these files into the Supabase SQL Editor in order — same result,
+   no connection string needed.
+
+4. **Run it.**
 
    ```bash
    npm install
    npm run dev
    ```
+
+### On Prisma and RLS
+
+Prisma manages the schema; it does **not** serve member-facing queries.
+
+Prisma connects as the `postgres` owner role, which bypasses row-level security — every
+policy in `002_rls.sql` is inert on that connection, and a query through it returns
+committee-only and office-bearer-only rows to anyone. So:
+
+- **`supabase-js`** — anything a member sees. RLS and `auth.uid()` apply, which is what
+  enforces PRD 2.1. This is the default.
+- **Prisma** — schema management, introspection, and trusted server-side jobs that
+  legitimately need to see everything (reporting, bulk import, scheduled work).
+
+The SQL files stay the source of truth rather than `prisma migrate`, because RLS policies,
+`SECURITY DEFINER` functions, triggers and generated `tsvector` columns have no
+representation in the Prisma schema language. Prisma introspects what the SQL built.
 
 ### Demo accounts
 
