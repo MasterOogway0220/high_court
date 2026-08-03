@@ -1,26 +1,81 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* GHCBA — institutional, restrained. Deep navy + maroon on warm grey (PRD 5.3).
+   No dark mode in v1, by design. */
+@theme {
+  --color-ink-50: #f4f5f8;
+  --color-ink-100: #e4e7ee;
+  --color-ink-200: #c6ccdb;
+  --color-ink-300: #9aa5bd;
+  --color-ink-400: #6b7896;
+  --color-ink-600: #33456e;
+  --color-ink-700: #22355c;
+  --color-ink-800: #1a2949;
+  --color-ink-900: #16243f;
+
+  --color-maroon-50: #fbf3f2;
+  --color-maroon-100: #f5e2e0;
+  --color-maroon-200: #e9c5c1;
+  --color-maroon-600: #8f3831;
+  --color-maroon-700: #7b2d26;
+  --color-maroon-900: #4e1b16;
+
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f4f1ea;
+  --color-sand-200: #e8e3d8;
+  --color-sand-300: #d8d1c2;
+  --color-sand-600: #8a8271;
+
+  --font-serif: var(--font-display), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-sand-50);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3,
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  /* WCAG 2.1 AA: a visible focus ring everywhere, never removed (PRD 4.4) */
+  :focus-visible {
+    outline: 2px solid var(--color-maroon-700);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--color-maroon-100);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* thin ornamental rule under section headings */
+  .rule-accent::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 0.6rem;
+    background: var(--color-maroon-700);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
