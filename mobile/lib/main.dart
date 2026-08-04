@@ -13,6 +13,24 @@ import 'ui.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Fail with the name of the missing value, as required() does in
+  // src/lib/supabase/server.ts. An empty --dart-define still defines the key,
+  // so String.fromEnvironment returns '' rather than the default above — which
+  // once shipped a build that could not reach Supabase at all and showed the
+  // sign-in gate with no hint as to why.
+  for (final e in {
+    'SUPABASE_URL': supabaseUrl,
+    'SUPABASE_ANON_KEY': supabaseAnonKey,
+  }.entries) {
+    if (e.value.isEmpty) {
+      throw StateError(
+        '${e.key} is empty. Either drop the --dart-define=${e.key}= flag so the '
+        'value compiled into lib/data.dart is used, or give the flag a value.',
+      );
+    }
+  }
+
   // anonKey, not publishableKey: this project still issues the legacy anon JWT,
   // which is what the web app sends. Switch both together, not one of them.
   // ignore: deprecated_member_use

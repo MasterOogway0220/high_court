@@ -33,11 +33,11 @@ const supabaseAnonKey = String.fromEnvironment(
 */
 const demoEmail = String.fromEnvironment(
   'DEMO_AUTO_LOGIN',
-  defaultValue: 'ghcba-office@ghcba.demo',
+  defaultValue: 'demo@gmail.com',
 );
 const demoPassword = String.fromEnvironment(
   'DEMO_AUTO_LOGIN_PASSWORD',
-  defaultValue: 'demo1234',
+  defaultValue: 'Pass@123',
 );
 
 bool get demoMode => demoEmail.isNotEmpty;

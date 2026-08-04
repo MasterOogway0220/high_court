@@ -52,9 +52,12 @@ jobs:
       # No signing involved — a simulator binary is never code-signed.
       - name: Build for the iOS Simulator
         run: |
-          flutter build ios --simulator \
-            --dart-define=SUPABASE_URL="${SUPABASE_URL:-}" \
-            --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}"
+          # See the Android workflow: an empty --dart-define defines the key as
+          # '' and overrides the compiled-in default, leaving no backend config.
+          defines=""
+          [ -n "$SUPABASE_URL" ] && defines="$defines --dart-define=SUPABASE_URL=$SUPABASE_URL"
+          [ -n "$SUPABASE_ANON_KEY" ] && defines="$defines --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+          flutter build ios --simulator $defines
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}

@@ -45,13 +45,20 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
-      # Supabase config falls back to the values compiled into lib/data.dart.
-      # Set the repository secrets to point a demo build at another project.
       - name: Build APK
         run: |
-          flutter build apk --release \
-            --dart-define=SUPABASE_URL="${SUPABASE_URL:-}" \
-            --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}"
+          # Only pass a --dart-define when the secret actually holds something.
+          #
+          # An empty --dart-define=KEY= still DEFINES the key, and Dart's
+          # String.fromEnvironment then returns '' rather than the compiled-in
+          # default. Passing them unconditionally shipped an APK with no
+          # Supabase URL and no key at all — it could not reach the backend, so
+          # the demo auto-login failed and the sign-in gate appeared instead.
+          defines=""
+          [ -n "$SUPABASE_URL" ] && defines="$defines --dart-define=SUPABASE_URL=$SUPABASE_URL"
+          [ -n "$SUPABASE_ANON_KEY" ] && defines="$defines --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+          echo "extra defines: ${defines:-(none — using lib/data.dart defaults)}"
+          flutter build apk --release $defines
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
