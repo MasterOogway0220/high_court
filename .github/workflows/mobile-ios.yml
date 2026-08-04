@@ -26,6 +26,12 @@ on:
 jobs:
   simulator:
     runs-on: macos-latest
+    # Job-level env is the only way to guard a step on a secret: the `secrets`
+    # context is out of scope in a step's `if`, and a step's own `env:` block is
+    # out of scope for that same step's `if`. Lifting it to the job fixes both.
+    env:
+      APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
+      APPETIZE_PUBLIC_KEY: ${{ secrets.APPETIZE_PUBLIC_KEY }}
     defaults:
       run:
         working-directory: mobile
@@ -65,13 +71,10 @@ jobs:
           if-no-files-found: error
 
       - name: Publish to Appetize
-        # secrets, not env: a step's own `env:` block is not in scope for its
-        # own `if`, so guarding on it would silently never run.
-        if: ${{ secrets.APPETIZE_TOKEN != '' }}
+        # Reads the job-level env above. Skipped, not failed, until the token
+        # secret exists — the simulator artifact is still produced either way.
+        if: ${{ env.APPETIZE_TOKEN != '' }}
         working-directory: ${{ github.workspace }}
-        env:
-          APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
-          APPETIZE_PUBLIC_KEY: ${{ secrets.APPETIZE_PUBLIC_KEY }}
         run: |
           # With a public key the URL stays put across builds; without one the
           # first run mints it, and you paste it back as a secret.
