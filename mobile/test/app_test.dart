@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ghcba/data.dart';
 import 'package:ghcba/format.dart';
 import 'package:ghcba/main.dart';
 import 'package:ghcba/screens/login.dart';
@@ -106,15 +107,11 @@ void main() {
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
-    testWidgets('the gate surfaces why it was shown at all', (tester) async {
-      // Demo mode normally skips this screen entirely, so when it does appear
-      // it has to say what went wrong rather than look like a plain sign-in.
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(notice: 'Automatic demo sign-in failed.'),
-        ),
-      );
-      expect(find.text('Automatic demo sign-in failed.'), findsOneWidget);
+    test('demo mode is on, so the sign-in gate is never reached', () {
+      // The gate still exists for builds with demo mode switched off; this
+      // pins that the shipped configuration skips it.
+      expect(demoMode, isTrue);
+      expect(demoEmail, 'demo@gmail.com');
     });
 
     testWidgets('an empty state states an instruction, never a blank card', (

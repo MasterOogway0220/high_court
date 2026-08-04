@@ -62,7 +62,6 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   Session? _session;
   bool _ready = false;
-  bool _demoFailed = false;
 
   @override
   void initState() {
@@ -78,12 +77,20 @@ class _AuthGateState extends State<AuthGate> {
     // Supabase.initialize has already restored any stored session, so a null
     // one here means there is genuinely nobody signed in.
     if (_session == null && demoMode) {
-      final ok = await Data.demoSignIn();
-      // Attempted once, and once only. Retrying is what turns a wrong demo
-      // password into an infinite loop instead of a legible failure.
-      if (mounted && !ok) setState(() => _demoFailed = true);
+      // Attempted once, and once only. Retrying automatically is what turns a
+      // wrong demo password into an infinite loop instead of a legible failure.
+      await Data.demoSignIn();
     }
-    if (mounted) setState(() => _ready = true);
+    if (!mounted) return;
+
+    // Read the session straight off the client rather than waiting for
+    // onAuthStateChange to deliver it. The listener is not guaranteed to have
+    // fired by now, and treating "not yet delivered" as "signed out" is what
+    // flashes the gate for a frame after a sign-in that actually succeeded.
+    setState(() {
+      _session = sb.auth.currentSession;
+      _ready = true;
+    });
   }
 
   @override
@@ -91,13 +98,30 @@ class _AuthGateState extends State<AuthGate> {
     if (!_ready) return const _Splash();
     if (_session != null) return const Shell();
 
-    // Only reached when demo mode is off, or when it failed and the gate is
-    // the honest thing to show.
-    return LoginScreen(
-      notice: _demoFailed
-          ? 'Automatic demo sign-in failed. Sign in with your own credentials.'
-          : null,
-    );
+    // A demo build never shows the sign-in gate. Reaching here means the
+    // auto-login failed outright, so say so and offer one deliberate retry —
+    // an automatic one would spin forever on a bad password.
+    if (demoMode) {
+      return Scaffold(
+        backgroundColor: C.canvas,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ErrorState(
+              'Could not reach the Association server. Check your connection.',
+              onRetry: () {
+                setState(() => _ready = false);
+                _start();
+              },
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Only for builds with demo mode switched off, where members sign in
+    // with their own credentials as they do on the web.
+    return const LoginScreen();
   }
 }
 
