@@ -21,6 +21,27 @@ const supabaseAnonKey = String.fromEnvironment(
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4cWhlbmlwdWJtamZzamF0aXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MzQ3ODgsImV4cCI6MjEwMTMxMDc4OH0.kn_aIRwnIRI77o928hqZnjvwFYiQZ9R-_uGR1sw2RfI',
 );
 
+/*
+  Demo auto-login, mirroring DEMO_AUTO_LOGIN in src/proxy.ts. When an account is
+  configured the app signs in as it at launch and the sign-in gate never appears,
+  so the dashboard can be shown without a sign-in step.
+
+  Gated on a compile-time value rather than hard-coded, exactly as the web gates
+  it on an env var: build with --dart-define=DEMO_AUTO_LOGIN= and the normal gate
+  returns, with no code change. Never ship this to members — it hands every
+  person holding the APK a full session.
+*/
+const demoEmail = String.fromEnvironment(
+  'DEMO_AUTO_LOGIN',
+  defaultValue: 'ghcba-office@ghcba.demo',
+);
+const demoPassword = String.fromEnvironment(
+  'DEMO_AUTO_LOGIN_PASSWORD',
+  defaultValue: 'demo1234',
+);
+
+bool get demoMode => demoEmail.isNotEmpty;
+
 SupabaseClient get sb => Supabase.instance.client;
 
 /// One record from Postgres. Named Rec, not Row — Flutter already owns `Row`.
@@ -88,6 +109,22 @@ class Data {
       return 'That password does not match our records.';
     } catch (_) {
       return 'Could not sign in. Check your connection and try again.';
+    }
+  }
+
+  /// Returns false rather than throwing: a failed demo sign-in falls back to the
+  /// normal gate. The web learned this the hard way — bouncing on failure turned
+  /// a bad password into ERR_TOO_MANY_REDIRECTS instead of a legible error.
+  static Future<bool> demoSignIn() async {
+    if (!demoMode) return false;
+    try {
+      await sb.auth.signInWithPassword(
+        email: demoEmail,
+        password: demoPassword,
+      );
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

@@ -44,6 +44,7 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   Session? _session;
   bool _ready = false;
+  bool _demoFailed = false;
 
   @override
   void initState() {
@@ -52,22 +53,93 @@ class _AuthGateState extends State<AuthGate> {
     sb.auth.onAuthStateChange.listen((state) {
       if (mounted) setState(() => _session = state.session);
     });
-    // One frame to let the persisted session load before deciding.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _ready = true);
-    });
+    _start();
+  }
+
+  Future<void> _start() async {
+    // Supabase.initialize has already restored any stored session, so a null
+    // one here means there is genuinely nobody signed in.
+    if (_session == null && demoMode) {
+      final ok = await Data.demoSignIn();
+      // Attempted once, and once only. Retrying is what turns a wrong demo
+      // password into an infinite loop instead of a legible failure.
+      if (mounted && !ok) setState(() => _demoFailed = true);
+    }
+    if (mounted) setState(() => _ready = true);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_ready) {
-      return const Scaffold(
-        backgroundColor: C.canvas,
-        body: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      );
-    }
-    return _session == null ? const LoginScreen() : const Shell();
+    if (!_ready) return const _Splash();
+    if (_session != null) return const Shell();
+
+    // Only reached when demo mode is off, or when it failed and the gate is
+    // the honest thing to show.
+    return LoginScreen(
+      notice: _demoFailed
+          ? 'Automatic demo sign-in failed. Sign in with your own credentials.'
+          : null,
+    );
   }
+}
+
+/// Shown while the session resolves. Branded rather than a bare spinner,
+/// because in demo mode this is the first thing anyone sees.
+class _Splash extends StatelessWidget {
+  const _Splash();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: C.canvas,
+    body: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: SizedBox(
+              height: 76,
+              width: 76,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(color: C.ink),
+                  const DotField(
+                    gap: 7,
+                    radius: 1.1,
+                    color: Color(0x26FFFFFF),
+                  ),
+                  const Center(
+                    child: Text(
+                      'GH',
+                      style: TextStyle(
+                        fontFamily: 'Doto',
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        color: C.onDark,
+                        height: 1,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 22),
+          const Text('GUWAHATI HIGH COURT', style: T.eyebrow),
+          const SizedBox(height: 8),
+          const Text('Bar Association', style: T.title3),
+          const SizedBox(height: 26),
+          const SizedBox(
+            height: 18,
+            width: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: C.ink4),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 /// The five sections the web app puts in its mobile bar (see MOBILE in nav.tsx).

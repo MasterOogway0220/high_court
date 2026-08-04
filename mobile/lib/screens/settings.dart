@@ -360,15 +360,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 '${widget.me.fullName} · ${widget.me.email ?? widget.me.enrolmentNo}',
                 style: T.footnote,
               ),
-              const SizedBox(height: 12),
-              AppButton(
-                'Sign out',
-                variant: BtnVariant.danger,
-                expand: true,
-                icon: Icons.logout_rounded,
-                // AuthGate is listening; signing out swaps the screen itself.
-                onPressed: Data.signOut,
-              ),
+              // No sign-out in demo mode: the gate would sign straight back in,
+              // so the button would read as broken. The web hides it too.
+              if (!demoMode) ...[
+                const SizedBox(height: 12),
+                AppButton(
+                  'Sign out',
+                  variant: BtnVariant.danger,
+                  expand: true,
+                  icon: Icons.logout_rounded,
+                  // AuthGate is listening; signing out swaps the screen itself.
+                  onPressed: Data.signOut,
+                ),
+              ] else ...[
+                const SizedBox(height: 8),
+                Text(
+                  'This is a demo build — it opens straight into the dashboard '
+                  'and signing out is disabled.',
+                  style: T.caption,
+                ),
+              ],
             ],
           ),
         ),

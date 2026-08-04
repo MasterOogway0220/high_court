@@ -106,6 +106,17 @@ void main() {
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
+    testWidgets('the gate surfaces why it was shown at all', (tester) async {
+      // Demo mode normally skips this screen entirely, so when it does appear
+      // it has to say what went wrong rather than look like a plain sign-in.
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: LoginScreen(notice: 'Automatic demo sign-in failed.'),
+        ),
+      );
+      expect(find.text('Automatic demo sign-in failed.'), findsOneWidget);
+    });
+
     testWidgets('an empty state states an instruction, never a blank card', (
       tester,
     ) async {

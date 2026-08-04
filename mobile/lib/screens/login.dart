@@ -7,7 +7,11 @@ import '../ui.dart';
 /// Mirrors src/app/(auth)/login — enrolment number or registered mobile, plus a
 /// password. There is no self-service reset: the office issues credentials.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.notice});
+
+  /// Set when the gate is being shown because something upstream failed —
+  /// a demo auto-login that did not take, for instance.
+  final String? notice;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,7 +20,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _identifier = TextEditingController();
   final _password = TextEditingController();
-  String? _error;
+  late String? _error = widget.notice;
   bool _busy = false;
 
   @override
