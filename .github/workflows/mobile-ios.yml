@@ -16,9 +16,11 @@ name: iOS demo build
 # The resulting link is a simulator, not a device build: it demonstrates the
 # app faithfully but cannot be installed on an iPhone. That needs TestFlight.
 
+# Its own tag prefix, so cutting an Android release does not also spend macOS
+# runner minutes before the Appetize token is in place.
 on:
   push:
-    tags: ['mobile-v*']
+    tags: ['ios-v*']
   workflow_dispatch:
 
 jobs:
@@ -63,7 +65,9 @@ jobs:
           if-no-files-found: error
 
       - name: Publish to Appetize
-        if: ${{ env.APPETIZE_TOKEN != '' }}
+        # secrets, not env: a step's own `env:` block is not in scope for its
+        # own `if`, so guarding on it would silently never run.
+        if: ${{ secrets.APPETIZE_TOKEN != '' }}
         working-directory: ${{ github.workspace }}
         env:
           APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
