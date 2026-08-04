@@ -1,0 +1,95 @@
+name: iOS demo build
+
+# iOS cannot be built on Windows, and an app installable on a real iPhone needs
+# the Apple Developer Program. For a demo that is a link rather than an install,
+# this builds the app for the iOS Simulator on a macOS runner and hands it to
+# Appetize.io, which serves it as an iPhone anyone can tap through in a browser.
+#
+# Setup, once:
+#   1. Create a free account at https://appetize.io and copy the API token.
+#   2. Repo → Settings → Secrets and variables → Actions:
+#        APPETIZE_TOKEN       (required)
+#        APPETIZE_PUBLIC_KEY  (optional — set it after the first run so every
+#                              later build updates the same URL instead of
+#                              minting a new one)
+#
+# The resulting link is a simulator, not a device build: it demonstrates the
+# app faithfully but cannot be installed on an iPhone. That needs TestFlight.
+
+on:
+  push:
+    tags: ['mobile-v*']
+  workflow_dispatch:
+
+jobs:
+  simulator:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.1
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      # No signing involved — a simulator binary is never code-signed.
+      - name: Build for the iOS Simulator
+        run: |
+          flutter build ios --simulator \
+            --dart-define=SUPABASE_URL="${SUPABASE_URL:-}" \
+            --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Zip the app bundle
+        run: |
+          cd build/ios/iphonesimulator
+          zip -r -y "$GITHUB_WORKSPACE/Runner.app.zip" Runner.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ghcba-ios-simulator
+          path: Runner.app.zip
+          if-no-files-found: error
+
+      - name: Publish to Appetize
+        if: ${{ env.APPETIZE_TOKEN != '' }}
+        working-directory: ${{ github.workspace }}
+        env:
+          APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
+          APPETIZE_PUBLIC_KEY: ${{ secrets.APPETIZE_PUBLIC_KEY }}
+        run: |
+          # With a public key the URL stays put across builds; without one the
+          # first run mints it, and you paste it back as a secret.
+          if [ -n "$APPETIZE_PUBLIC_KEY" ]; then
+            endpoint="https://api.appetize.io/v1/apps/$APPETIZE_PUBLIC_KEY"
+          else
+            endpoint="https://api.appetize.io/v1/apps"
+          fi
+
+          response=$(curl --fail-with-body -sS "$endpoint" \
+            -u "$APPETIZE_TOKEN:" \
+            -F "file=@Runner.app.zip" \
+            -F "platform=ios")
+
+          url=$(printf '%s' "$response" | grep -o '"publicURL":"[^"]*"' | cut -d'"' -f4)
+          key=$(printf '%s' "$response" | grep -o '"publicKey":"[^"]*"' | cut -d'"' -f4)
+
+          {
+            echo "### iOS demo"
+            echo ""
+            echo "**Open in a browser:** $url"
+            echo ""
+            echo "publicKey: \`$key\` — save this as the \`APPETIZE_PUBLIC_KEY\`"
+            echo "secret to keep this URL stable on future builds."
+          } >> "$GITHUB_STEP_SUMMARY"
