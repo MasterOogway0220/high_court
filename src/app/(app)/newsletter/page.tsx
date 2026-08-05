@@ -46,15 +46,15 @@ export default async function NewsletterPage({
           defaultValue={sp.q}
           placeholder="Search issues"
           aria-label="Search issues"
-          className="h-9 flex-1 rounded border border-paper-edge bg-white px-3 text-sm"
+          className="h-9 flex-1 rounded border border-paper-edge bg-paper-raised px-3 text-sm"
         />
-        <select name="year" defaultValue={sp.year ?? ''} aria-label="Year" className="h-9 rounded border border-paper-edge bg-white px-2 text-sm">
+        <select name="year" defaultValue={sp.year ?? ''} aria-label="Year" className="h-9 rounded border border-paper-edge bg-paper-raised px-2 text-sm">
           <option value="">All years</option>
           {years.map((y) => (
             <option key={y} value={y}>{y}</option>
           ))}
         </select>
-        <button className="h-10 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">Search</button>
+        <button className="h-10 rounded-full bg-solid px-4.5 text-[13px] font-semibold text-on-solid hover:bg-brand-700">Search</button>
       </form>
 
       {!issues?.length ? (

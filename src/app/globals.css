@@ -1,66 +1,123 @@
 @import 'tailwindcss';
 
 /*
-  GHCBA — Donezo direction.
+  GHCBA — Apple direction.
 
-  Taken from the supplied reference exactly: a white app panel floating on a soft
-  grey page, a light canvas inside it, white hairline cards, one green as the only
-  hue, and pill-shaped controls. One sans family (Plus Jakarta Sans) does display,
-  body and data — the reference has no serif and no mono.
+  Structure, materials and motion follow Apple's interface language; the
+  Association's yellow stays as the one system accent, the way iOS uses a single
+  tint. Every value lives on :root and reaches the app through @theme inline, so
+  the existing `bg-paper-raised` / `text-ink-500` utilities re-theme with no page
+  edit.
+
+  Yellow is never text: #F5C518 on white is 1.7:1. The old design doc was right
+  about that and the rule survives — --a-text carries a darkened amber for
+  anything that has to read as words.
 */
-/*
-  Black and yellow.
 
-  The scale is deliberately discontinuous, because the two halves do different jobs:
-  yellow cannot carry text on white (#F5C518 on white is 1.7:1, nowhere near legible),
-  so it is only ever a fill, a wash or a marker. Black does every job yellow cannot —
-  buttons, body accents, links.
-
-    brand-50 … brand-500   yellow, pale wash → vivid signal. Fills and markers only.
-    brand-600, brand-700   black. Fills with white text, and any accent that is text.
-*/
-@theme {
-  --color-brand-50: #fef9e7;
-  --color-brand-100: #fceec1;
-  --color-brand-200: #f9e39a;
-  --color-brand-300: #f4d466;
-  --color-brand-400: #f5c518; /* the signal yellow */
-  --color-brand-500: #e3b100;
-  --color-brand-600: #181818;
-  --color-brand-700: #000000;
-
-  /* neutrals, true grey so the yellow is the only hue in the room */
-  --color-ink-900: #121212;
-  --color-ink-800: #1f1f1f;
-  --color-ink-700: #333333;
-  --color-ink-600: #4d4d4d;
-  --color-ink-500: #666666;
-  --color-ink-400: #8a8a8a;
-  --color-ink-300: #ababab;
-  --color-ink-200: #cccccc;
-  --color-ink-100: #e5e5e5;
-  --color-ink-50: #f2f2f2;
+:root {
+  /* Light only, by request. `light` (not `light dark`) also stops the browser
+     auto-darkening form controls and scrollbars for a viewer whose OS is dark. */
+  color-scheme: light;
 
   /* surfaces, outermost to innermost */
-  --color-shell: #ededeb; /* the page behind the app shell */
-  --color-paper: #f7f7f5; /* the canvas cards sit on */
-  --color-paper-raised: #ffffff; /* a card */
-  --color-paper-sunk: #f2f2f0; /* search field, hover */
-  --color-paper-edge: #e8e8e5; /* every hairline */
+  --s-shell: #f2f2f7;
+  --s-base: #f2f2f7;
+  --s-raised: #ffffff;
+  --s-sunk: #e9e9ef;
+  --s-edge: #d7d7dc;
 
-  /* status. Warn is pushed to orange so it cannot be mistaken for the brand yellow. */
-  --color-info: #2f6fd0;
-  --color-info-wash: #e9f1fc;
-  --color-warn: #b45309;
-  --color-warn-wash: #fdefe3;
-  --color-alert: #dc4438;
-  --color-alert-wash: #fce9e7;
+  /* the floating material — nav bars and toolbars */
+  --s-glass: rgba(249, 249, 251, 0.82);
+  --s-glass-edge: rgba(255, 255, 255, 0.7);
+
+  /*
+    Labels: Apple's four-step hierarchy, with the alphas chosen against measured
+    contrast rather than copied. Measured on white these land at 21:1, 7.2:1,
+    4.6:1 and 2.1:1 — so the top three all clear AA for body text and only --l-4,
+    which is placeholder and disabled text, sits below it by design.
+  */
+  --l-1: #000000;
+  --l-2: rgba(60, 60, 67, 0.86);
+  --l-3: rgba(60, 60, 67, 0.72);
+  --l-4: rgba(60, 60, 67, 0.4);
+
+  /* a solid fill and the text that sits on it — the pair inverts by theme */
+  --solid: #1c1c1e;
+  --on-solid: #ffffff;
+
+  /* accent */
+  --a-fill: #f5c518;
+  --a-text: #7a5c00;
+  --a-wash: #fdf3d4;
+  --a-on: #1c1c1e;
+
+  /* status */
+  --st-info: #0a6cd8;
+  --st-info-wash: #e7f0fd;
+  --st-warn: #b45309;
+  --st-warn-wash: #fdefe3;
+  --st-alert: #d70015;
+  --st-alert-wash: #fdeaea;
+
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/*
+  `inline` hands Tailwind a reference to the vars above rather than their resolved
+  value, so the whole app themes from :root without touching a page. Light is the
+  only theme; a dark block dropped in here would be the only change needed.
+*/
+@theme inline {
+  --color-shell: var(--s-shell);
+  --color-paper: var(--s-base);
+  --color-paper-raised: var(--s-raised);
+  --color-paper-sunk: var(--s-sunk);
+  --color-paper-edge: var(--s-edge);
+  --color-glass: var(--s-glass);
+  --color-glass-edge: var(--s-glass-edge);
+
+  /* The ink ramp collapses onto four real labels — more steps than that just
+     invents contrast levels nobody chose. ink-500/400 carry timestamps and page
+     subtitles, so they sit on --l-3 which still clears AA; only ink-300, used for
+     placeholders, drops to --l-4. */
+  --color-ink-900: var(--l-1);
+  --color-ink-800: var(--l-1);
+  --color-ink-700: var(--l-2);
+  --color-ink-600: var(--l-2);
+  --color-ink-500: var(--l-2);
+  --color-ink-400: var(--l-3);
+  --color-ink-300: var(--l-4);
+  --color-ink-200: var(--s-edge);
+  --color-ink-100: var(--s-edge);
+  --color-ink-50: var(--s-sunk);
+
+  /* A filled control and its label. bg-solid + text-on-solid stays legible in
+     both themes; bg-brand-600 + text-white did not. */
+  --color-solid: var(--solid);
+  --color-on-solid: var(--on-solid);
+
+  --color-brand-50: var(--a-wash);
+  --color-brand-100: var(--a-wash);
+  --color-brand-200: var(--a-wash);
+  --color-brand-300: var(--a-fill);
+  --color-brand-400: var(--a-fill);
+  --color-brand-500: var(--a-fill);
+  --color-brand-600: var(--a-text);
+  --color-brand-700: var(--a-text);
+  --color-on-accent: var(--a-on);
+
+  --color-info: var(--st-info);
+  --color-info-wash: var(--st-info-wash);
+  --color-warn: var(--st-warn);
+  --color-warn-wash: var(--st-warn-wash);
+  --color-alert: var(--st-alert);
+  --color-alert-wash: var(--st-alert-wash);
 
   --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 1rem;
+  --radius-card: 1.125rem;
   --radius-panel: 1.625rem;
 }
 
@@ -72,95 +129,160 @@
     background: var(--color-shell);
     color: var(--color-ink-900);
     font-family: var(--font-sans);
-    font-size: 13.5px;
-    line-height: 1.55;
+    /* rem, so a larger browser text size scales the layout with it rather than
+       breaking out of it (Dynamic Type's web equivalent). */
+    font-size: 0.9375rem;
+    line-height: 1.47;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1,
-  h2,
-  h3 {
+
+  /*
+    Tracking is size-specific. A single letter-spacing across every heading is
+    wrong at one end or the other: large text reads too loose, small text too
+    tight. Leading moves inversely to size for the same reason.
+  */
+  h1 {
     font-weight: 700;
-    letter-spacing: -0.021em;
-    line-height: 1.2;
+    letter-spacing: -0.022em;
+    line-height: 1.08;
   }
-  /* Figures line up in columns — the reference sets every count and clock this way. */
+  h2 {
+    font-weight: 700;
+    letter-spacing: -0.017em;
+    line-height: 1.16;
+  }
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.011em;
+    line-height: 1.26;
+  }
+
   code,
   kbd,
   .record {
     font-variant-numeric: tabular-nums;
   }
+
+  /*
+    Grid children default to `min-width: auto`, so they refuse to shrink below
+    their content. Every grid here declares only sm:/lg:/xl: column counts, so on
+    a phone the single implicit track was sized by its content and pushed past
+    the viewport — the dashboard overflowed a 380px screen by 57px.
+
+    Guarding the child rather than capping the track leaves explicit column
+    definitions alone: the calendar's grid-cols-7 and the document library's
+    [15rem_1fr] still size exactly as written. Zero specificity via :where(), so
+    any Tailwind min-w-* utility still wins.
+  */
+  :where(.grid) > * {
+    min-width: 0;
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-brand-600);
+    outline: 2px solid var(--color-brand-400);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   ::selection {
-    background: var(--color-brand-300);
+    background: var(--a-fill);
+    color: var(--a-on);
   }
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-ink-200);
+    background: var(--color-ink-300);
     border: 3px solid transparent;
     background-clip: content-box;
     border-radius: 8px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-ink-300);
-    background-clip: content-box;
-  }
 }
 
 @layer components {
-  /* Small uppercase label — "MENU" / "GENERAL" in the reference sidebar. */
   .eyebrow {
-    font-size: 10.5px;
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.11em;
+    /* small text wants tracking opened up, not closed down */
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--color-ink-400);
   }
 
-  /* Hairline under a heading. */
   .ruled {
     border-bottom: 1px solid var(--color-paper-edge);
   }
 
   /*
-    THE SIGNATURE — the diagonal hatch.
-    The reference draws every bar and arc segment that holds no value as a hatched
-    ghost rather than leaving a gap, so an empty slot still reads as a slot. Used
-    here for anything not yet filled in: empty states, skeletons, unused capacity.
+    The floating material. Chrome is a translucent layer that content scrolls
+    under, not an opaque strip that consumes it. The bright top edge is the
+    light catching the material.
+
+    The blur deliberately lives on the elements as Tailwind's
+    `backdrop-blur-xl backdrop-saturate-150` utilities, not here: Lightning CSS
+    strips a hand-written backdrop-filter out of this layer during the build, and
+    a translucent bar with no blur behind it is unreadable when text scrolls
+    under it.
   */
+  .glass {
+    background: var(--color-glass);
+  }
+  .glass-top {
+    border-top: 1px solid var(--color-glass-edge);
+  }
+
+  /*
+    Scroll edge effect: content fades out where it meets floating chrome,
+    instead of colliding with a hard 1px divider.
+  */
+  .scroll-edge-top {
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14px);
+  }
+
+  /*
+    Feedback on press, not on release. Anything tappable gets this — waiting for
+    click to show state reads as a dead interface.
+  */
+  .pressable {
+    transition:
+      transform 140ms var(--ease-out),
+      background-color 140ms var(--ease-out),
+      border-color 140ms var(--ease-out),
+      opacity 140ms var(--ease-out);
+  }
+  .pressable:active {
+    transform: scale(0.97);
+  }
+
   .hatch {
     background-image: repeating-linear-gradient(
       -45deg,
-      var(--color-ink-100) 0 1.5px,
+      var(--color-paper-edge) 0 1.5px,
       transparent 1.5px 6px
     );
   }
   .hatch-brand {
     background-image: repeating-linear-gradient(
       -45deg,
-      var(--color-brand-200) 0 1.5px,
+      var(--a-fill) 0 1.5px,
       transparent 1.5px 6px
     );
   }
 
-  /* The dark board: near-black carrying a low yellow sweep. */
+  /* The dark board stays dark in both themes — it is a printed object, not a
+     surface, so text-white on it is correct either way. */
   .board {
     background:
-      radial-gradient(120% 90% at 85% 0%, rgba(245, 197, 24, 0.22), transparent 62%),
+      radial-gradient(120% 90% at 85% 0%, rgba(245, 197, 24, 0.24), transparent 62%),
       radial-gradient(90% 70% at 0% 100%, rgba(245, 197, 24, 0.08), transparent 55%),
       #0d0d0d;
   }
 }
 
 @layer utilities {
-  /* One orchestrated page-load move, in CSS — no animation library for a fade. */
   .enter {
-    animation: enter 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    animation: enter 0.42s var(--ease-out) both;
   }
   .enter-1 {
     animation-delay: 0.04s;
@@ -184,13 +306,39 @@
   }
 }
 
+/*
+  Reduced motion means a gentler equivalent, not a dead interface. Movement and
+  scale go; opacity stays, because the fade is what tells you something arrived.
+*/
 @media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: fade-in 0.2s ease both;
+  }
+  .pressable:active {
+    transform: none;
+    opacity: 0.7;
+  }
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Frostier and solid when the user asks for less transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--color-paper-raised);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
 import { Badge, Button, Card, Empty, Heading, Input, Select } from '@/lib/ui'
 import { CATEGORY, VISIBILITY, ago, day } from '@/lib/format'
-import { Pin, Paperclip } from 'lucide-react'
+import { Pin, Paperclip, SlidersHorizontal } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Announcements' }
@@ -13,6 +13,8 @@ export default async function AnnouncementsPage({
   searchParams: Promise<{ q?: string; category?: string; from?: string; to?: string; archive?: string }>
 }) {
   const sp = await searchParams
+  // Keep the panel open when a refinement is already applied.
+  const refined = !!(sp.category || sp.from || sp.to)
   const supabase = await db()
   const viewer = (await me())!
   const now = new Date().toISOString()
@@ -53,18 +55,32 @@ export default async function AnnouncementsPage({
       </Heading>
 
       <Card className="mb-4 p-4">
+        {/* Search stays in reach; category and the date range go one level deeper,
+            the same disclosure the directory uses. A closed <details> still
+            submits, so the filters keep working while off screen. */}
         <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <Input name="q" defaultValue={sp.q} placeholder="Search notices" className="lg:col-span-2" aria-label="Search announcements" />
-          <Select name="category" defaultValue={sp.category ?? ''} aria-label="Category">
-            <option value="">All categories</option>
-            {Object.entries(CATEGORY).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
-            ))}
-          </Select>
-          <Input name="from" type="date" defaultValue={sp.from} aria-label="Published from" />
-          <Input name="to" type="date" defaultValue={sp.to} aria-label="Published to" />
+
+          <details className="sm:col-span-2 lg:col-span-3" open={refined}>
+            <summary className="pressable inline-flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-full bg-paper-sunk px-3.5 text-[12.5px] font-semibold text-ink-700">
+              <SlidersHorizontal size={14} />
+              Filters
+            </summary>
+
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Select name="category" defaultValue={sp.category ?? ''} aria-label="Category">
+                <option value="">All categories</option>
+                {Object.entries(CATEGORY).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </Select>
+              <Input name="from" type="date" defaultValue={sp.from} aria-label="Published from" />
+              <Input name="to" type="date" defaultValue={sp.to} aria-label="Published to" />
+            </div>
+          </details>
+
           <div className="flex items-center gap-3 sm:col-span-2 lg:col-span-5">
-            <button className="h-10 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">Filter</button>
+            <button className="h-10 rounded-full bg-solid px-4.5 text-[13px] font-semibold text-on-solid hover:opacity-88 pressable">Filter</button>
             <Link href="/announcements" className="text-sm text-ink-500 hover:underline">Clear</Link>
             <label className="ml-auto flex items-center gap-2 text-sm text-ink-600">
               <input type="checkbox" name="archive" value="1" defaultChecked={!!sp.archive} className="accent-brand-600" />
@@ -110,7 +126,7 @@ export default async function AnnouncementsPage({
                       )}
                       {a.visibility !== 'all_members' && <Badge tone="warn">{VISIBILITY[a.visibility]}</Badge>}
                       {expired && <Badge>Expired</Badge>}
-                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-brand-600" aria-label="Unread" />}
+                      {unread && <span className="ml-auto h-2 w-2 rounded-full bg-solid" aria-label="Unread" />}
                     </div>
 
                     <h2

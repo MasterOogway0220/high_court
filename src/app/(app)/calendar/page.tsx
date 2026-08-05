@@ -85,14 +85,14 @@ export default async function CalendarPage({
             name="type"
             defaultValue={sp.type ?? ''}
             aria-label="Filter by type"
-            className="h-8 rounded border border-paper-edge bg-white px-2 text-sm"
+            className="h-8 rounded border border-paper-edge bg-paper-raised px-2 text-sm"
           >
             <option value="">All types</option>
             {Object.entries(ENTRY_TYPE).map(([v, l]) => (
               <option key={v} value={v}>{l}</option>
             ))}
           </select>
-          <button className="h-9 rounded-lg bg-brand-600 px-4 text-[12.5px] font-semibold text-white hover:bg-brand-700">Filter</button>
+          <button className="h-9 rounded-full bg-solid px-4 text-[12.5px] font-semibold text-on-solid hover:bg-brand-700">Filter</button>
         </form>
 
         <div className="flex gap-1 rounded border border-paper-edge p-0.5">
@@ -100,7 +100,7 @@ export default async function CalendarPage({
             <Link
               key={label}
               href={{ query: { ...sp, view: v || undefined } }}
-              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-brand-600 text-white' : 'text-ink-500 hover:bg-paper-sunk'}`}
+              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-solid text-on-solid' : 'text-ink-500 hover:bg-paper-sunk'}`}
             >
               {label}
             </Link>
@@ -130,7 +130,7 @@ export default async function CalendarPage({
                 >
                   <span
                     className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                      today ? 'bg-brand-600 font-semibold text-white' : inMonth ? 'text-ink-600' : 'text-ink-200'
+                      today ? 'bg-solid font-semibold text-on-solid' : inMonth ? 'text-ink-600' : 'text-ink-200'
                     }`}
                   >
                     {format(d, 'd')}

@@ -138,7 +138,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               <p className="mb-2 text-xs tracking-wider text-ink-400 uppercase">Capacity</p>
               <div className="h-2 overflow-hidden rounded-full bg-paper-edge">
                 <div
-                  className="h-full rounded-full bg-brand-600 transition-[width]"
+                  className="h-full rounded-full bg-solid transition-[width]"
                   style={{ width: `${Math.min(100, (seats / e.capacity) * 100)}%` }}
                 />
               </div>

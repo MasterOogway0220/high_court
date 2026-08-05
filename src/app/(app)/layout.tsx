@@ -33,9 +33,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-19 items-center gap-3 bg-paper-raised px-4 sm:px-6">
+        <header className="glass backdrop-blur-xl backdrop-saturate-150 sticky top-0 z-30 flex h-19 items-center gap-3 px-4 sm:px-6">
           <Link href="/" className="flex shrink-0 items-center gap-2.5 lg:hidden">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-[13px] font-extrabold text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-solid text-[13px] font-extrabold text-on-solid">
               GH
             </span>
           </Link>
@@ -48,7 +48,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link
               href="/contact"
               aria-label="Contact the office"
-              className="hidden h-10 w-10 items-center justify-center rounded-full border border-paper-edge text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600 sm:flex"
+              className="pressable hidden h-10 w-10 items-center justify-center rounded-full bg-paper-sunk text-ink-500 hover:text-ink-900 sm:flex"
             >
               <Mail size={17} />
             </Link>
@@ -56,7 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link
               href="/notifications"
               aria-label={`Notifications${unreadNotifs ? `, ${unreadNotifs} unread` : ''}`}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-paper-edge text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600"
+              className="pressable relative flex h-10 w-10 items-center justify-center rounded-full bg-paper-sunk text-ink-500 hover:text-ink-900"
             >
               <Bell size={17} />
               {!!unreadNotifs && (
@@ -68,9 +68,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
             <Link
               href="/settings"
-              className="flex items-center gap-2.5 rounded-full pl-1 transition-opacity hover:opacity-80"
+              className="pressable flex items-center gap-2.5 rounded-full pl-1 hover:opacity-80"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-[12.5px] font-bold text-brand-700 uppercase">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-400 text-[12.5px] font-bold text-on-accent uppercase">
                 {initials}
               </span>
               <span className="hidden leading-tight md:block">
@@ -85,8 +85,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* The canvas: cards sit on this, never directly on the shell. */}
-        <main className="enter min-w-0 flex-1 border-t border-paper-edge bg-paper px-4 pt-6 pb-24 sm:px-6 lg:pb-10">
+        {/* The canvas: cards sit on this, never directly on the shell. Content
+            scrolls under the toolbar, so there is no divider to collide with. */}
+        <main className="enter min-w-0 flex-1 bg-paper px-4 pt-6 pb-24 sm:px-6 lg:pb-10">
           {children}
         </main>
       </div>

@@ -7,18 +7,21 @@ export const cn = (...c: ClassValue[]) => twMerge(clsx(c))
 /*
   Primitives.
 
-  Surfaces are white cards with a hairline edge and a 16px radius; controls carry a
-  small 8px radius; status reads as a soft tinted chip. Anything with real interaction
-  complexity uses the native element — <select>, <details>, <dialog> — which brings
-  keyboard handling and screen-reader semantics without a component library.
-*/
+  Surfaces are elevated cards on a grouped canvas; controls are capsules; status
+  reads as a soft tinted chip. Anything with real interaction complexity uses the
+  native element — <select>, <details>, <dialog> — which brings keyboard handling
+  and screen-reader semantics without a component library.
 
+  Every colour comes from a token, never a literal, so the palette is changed in
+  one file. `primary` is a solid fill whose label inverts with it; `accent` carries
+  the Association's yellow, which is a fill and never text.
+*/
 const variants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 disabled:bg-ink-300',
-  accent: 'bg-brand-400 text-ink-900 hover:bg-brand-500 disabled:bg-brand-200',
-  outline: 'border border-paper-edge bg-white text-ink-800 hover:border-ink-300 hover:bg-paper-sunk',
+  primary: 'bg-solid text-on-solid hover:opacity-88 disabled:bg-ink-300',
+  accent: 'bg-brand-400 text-on-accent hover:brightness-95 disabled:opacity-50',
+  outline: 'border border-paper-edge bg-paper-raised text-ink-800 hover:bg-paper-sunk',
   ghost: 'text-ink-500 hover:bg-paper-sunk hover:text-ink-900',
-  danger: 'border border-alert-wash bg-alert-wash text-alert hover:bg-alert hover:text-white',
+  danger: 'border border-alert-wash bg-alert-wash text-alert hover:bg-alert hover:text-on-solid',
 }
 
 const sizes = {
@@ -36,8 +39,8 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors',
-        'disabled:cursor-not-allowed disabled:opacity-70',
+        'pressable inline-flex items-center justify-center gap-2 rounded-full font-semibold',
+        'disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100',
         variants[variant],
         sizes[size],
         className
@@ -58,7 +61,7 @@ export function Card({ className, ...props }: ComponentProps<'div'>) {
 }
 
 const field =
-  'w-full rounded-lg border border-paper-edge bg-white px-3.5 text-[13px] text-ink-900 ' +
+  'w-full rounded-lg border border-paper-edge bg-paper-raised px-3.5 text-[13px] text-ink-900 ' +
   'placeholder:text-ink-300 transition-colors focus:border-brand-400 focus:outline-none'
 
 export function Input({ className, ...props }: ComponentProps<'input'>) {
@@ -100,7 +103,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md px-2 py-0.5 text-[10.5px] font-semibold capitalize',
+        'inline-flex items-center rounded-full px-2 py-0.5 text-[10.5px] font-semibold capitalize',
         tones[tone],
         className
       )}
@@ -135,7 +138,7 @@ export function Heading({
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-        <h1 className="text-[26px] text-ink-900 sm:text-[30px]">{children}</h1>
+        <h1 className="text-[30px] text-ink-900 sm:text-[34px]">{children}</h1>
         {sub && <p className="mt-1.5 max-w-2xl text-[13px] text-ink-400">{sub}</p>}
       </div>
       {aside && <div className="flex shrink-0 items-center gap-2.5">{aside}</div>}
@@ -151,7 +154,7 @@ export function SectionTitle({ children, href, label }: { children: ReactNode; h
       {href && (
         <a
           href={href}
-          className="rounded-lg border border-paper-edge px-2.5 py-1 text-[11.5px] font-semibold text-ink-500 transition-colors hover:border-brand-300 hover:text-brand-600"
+          className="pressable rounded-full bg-paper-sunk px-3 py-1 text-[11.5px] font-semibold text-ink-500 hover:text-ink-900"
         >
           {label ?? 'View all'}
         </a>

@@ -15,7 +15,7 @@ export default async function LoginPage({
     <main className="flex min-h-dvh flex-col justify-center px-5 py-12">
       <div className="mx-auto w-full max-w-[25rem]">
         <div className="mb-6 flex items-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-solid text-on-solid">
             <Scale size={19} />
           </span>
           <span className="leading-none">

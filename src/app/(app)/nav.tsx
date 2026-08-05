@@ -63,8 +63,10 @@ export function Nav({
           href={href}
           aria-current={on ? 'page' : undefined}
           className={cn(
-            'group relative flex h-9.5 items-center gap-3 rounded-lg px-2 text-[13.5px] transition-colors',
-            on ? 'font-semibold text-ink-900' : 'text-ink-500 hover:bg-paper-sunk hover:text-ink-900'
+            'pressable group relative flex h-10 items-center gap-3 rounded-xl px-2.5 text-[13.5px]',
+            on
+              ? 'bg-paper-sunk font-semibold text-ink-900'
+              : 'text-ink-500 hover:bg-paper-sunk hover:text-ink-900'
           )}
         >
           {/* the current section is marked in the panel margin */}
@@ -74,7 +76,7 @@ export function Nav({
           <Icon size={17} className={on ? 'text-ink-900' : 'text-ink-400'} />
           <span className="truncate">{label}</span>
           {!!count && (
-            <span className="ml-auto rounded-md bg-brand-400 px-1.5 py-0.5 text-[10px] font-bold text-ink-900 tabular-nums">
+            <span className="ml-auto rounded-full bg-brand-400 px-1.5 py-0.5 text-[10px] font-bold text-on-accent tabular-nums">
               {count > 99 ? '99+' : count}
             </span>
           )}
@@ -90,7 +92,7 @@ export function Nav({
         className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-r border-paper-edge px-5 py-6 lg:flex"
       >
         <Link href="/" className="mb-8 flex items-center gap-2.5 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-solid text-on-solid">
             <Scale size={18} />
           </span>
           <span className="leading-none">
@@ -125,7 +127,7 @@ export function Nav({
 
       <nav
         aria-label="Sections"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-paper-edge bg-paper-raised/95 backdrop-blur lg:hidden"
+        className="glass glass-top backdrop-blur-xl backdrop-saturate-150 fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
         <ul className="flex">
           {MOBILE.map(({ href, label, icon: Icon }) => (
@@ -134,8 +136,8 @@ export function Nav({
                 href={href}
                 aria-current={active(href) ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold',
-                  active(href) ? 'text-brand-600' : 'text-ink-400'
+                  'pressable flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold',
+                  active(href) ? 'text-ink-900' : 'text-ink-400'
                 )}
               >
                 <Icon size={18} />

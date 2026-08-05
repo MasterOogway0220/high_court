@@ -79,7 +79,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
             <a
               href={signed.signedUrl}
               download={latest.file_name}
-              className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
+              className="mt-3 inline-flex h-10 items-center gap-2 rounded-full bg-solid px-4.5 text-[13px] font-semibold text-on-solid transition-colors hover:bg-brand-700"
             >
               <Download size={15} />
               Download

@@ -54,7 +54,7 @@ export default async function NotificationsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       <Badge tone="info">{n.kind}</Badge>
-                      {!n.read_at && <span className="h-1.5 w-1.5 rounded-full bg-brand-600" aria-label="Unread" />}
+                      {!n.read_at && <span className="h-1.5 w-1.5 rounded-full bg-brand-400" aria-label="Unread" />}
                     </div>
                     {n.link ? (
                       <Link href={n.link} className="text-sm font-medium text-ink-900 hover:text-brand-600">

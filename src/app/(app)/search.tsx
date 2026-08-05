@@ -74,14 +74,14 @@ export function GlobalSearch() {
         onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
         placeholder="Search members, notices, documents"
         aria-label="Search the dashboard"
-        className="h-11 w-full rounded-lg bg-paper-sunk pr-16 pl-11 text-[13px] text-ink-900 placeholder:text-ink-400 focus:bg-white focus:outline-2 focus:outline-brand-400"
+        className="h-11 w-full rounded-lg bg-paper-sunk pr-16 pl-11 text-[13px] text-ink-900 placeholder:text-ink-400 focus:bg-paper-raised focus:outline-2 focus:outline-brand-400"
       />
-      <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[10.5px] font-semibold text-ink-400 sm:block">
+      <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded-md bg-paper-raised px-2 py-1 text-[10.5px] font-semibold text-ink-400 sm:block">
         ⌘ K
       </kbd>
 
       {open && q.trim().length >= 2 && (
-        <div className="absolute top-13 right-0 left-0 z-50 max-h-[70vh] overflow-y-auto rounded-2xl border border-paper-edge bg-white p-1.5 shadow-[0_12px_32px_rgba(16,27,20,0.12)]">
+        <div className="absolute top-13 right-0 left-0 z-50 max-h-[70vh] overflow-y-auto rounded-2xl border border-paper-edge bg-paper-raised p-1.5 shadow-[0_12px_32px_rgba(16,27,20,0.12)]">
           {groups.length === 0 ? (
             <p className="px-3 py-3 text-[13px] text-ink-400">No results for “{q}”.</p>
           ) : (

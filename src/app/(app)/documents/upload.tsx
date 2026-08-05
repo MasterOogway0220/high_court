@@ -69,7 +69,7 @@ export function UploadDocument({ folders }: { folders: { id: number; name: strin
 
   return (
     <details ref={box} className="mb-4 group">
-      <summary className="inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700">
+      <summary className="inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-full bg-solid px-4.5 text-[13px] font-semibold text-on-solid transition-colors hover:bg-brand-700">
         <Upload size={15} />
         Upload a document
       </summary>

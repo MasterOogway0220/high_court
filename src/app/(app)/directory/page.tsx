@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { db, me } from '@/lib/supabase/server'
 import { Badge, Button, Card, Empty, Heading, Input, Select } from '@/lib/ui'
 import { DESIGNATION, day } from '@/lib/format'
-import { Search } from 'lucide-react'
+import { Search, SlidersHorizontal } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Member Directory' }
@@ -47,6 +47,9 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
         : query.order('full_name', { ascending: true })
 
   const { data: members, error } = await query.limit(300)
+  // Keep the panel open when a refinement is already applied, so an active filter
+  // is never hidden behind a closed disclosure.
+  const filtered = !!(sp.area || sp.designation || sp.status || sp.from || sp.to || (sp.sort && sp.sort !== 'name'))
   const cards = sp.view === 'card'
 
   return (
@@ -66,6 +69,12 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
       </Heading>
 
       <Card className="mb-4 p-4">
+        {/*
+          Search is the common path and stays in reach; the six refinements go one
+          level deeper behind a native <details>, which on a phone was pushing the
+          first member row off the bottom of the screen. Closed markup still
+          submits, so the filters keep working without being on screen.
+        */}
         <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="relative sm:col-span-2">
             <Search size={15} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink-300" />
@@ -78,43 +87,52 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
             />
           </div>
 
-          <Select name="area" defaultValue={sp.area ?? ''} aria-label="Practice area">
-            <option value="">All practice areas</option>
-            {PRACTICE_AREAS.map((a) => (
-              <option key={a} value={a}>{a}</option>
-            ))}
-          </Select>
+          <details className="group sm:col-span-2 lg:col-span-4" open={filtered}>
+            <summary className="pressable inline-flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-full bg-paper-sunk px-3.5 text-[12.5px] font-semibold text-ink-700">
+              <SlidersHorizontal size={14} />
+              Filters
+            </summary>
 
-          <Select name="designation" defaultValue={sp.designation ?? ''} aria-label="Designation">
-            <option value="">All designations</option>
-            {Object.entries(DESIGNATION).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
-            ))}
-          </Select>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Select name="area" defaultValue={sp.area ?? ''} aria-label="Practice area">
+                <option value="">All practice areas</option>
+                {PRACTICE_AREAS.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </Select>
 
-          <Select name="status" defaultValue={sp.status ?? ''} aria-label="Membership status">
-            <option value="">All statuses</option>
-            {['active', 'life', 'suspended', 'retired', 'deceased'].map((s) => (
-              <option key={s} value={s} className="capitalize">{s}</option>
-            ))}
-          </Select>
+              <Select name="designation" defaultValue={sp.designation ?? ''} aria-label="Designation">
+                <option value="">All designations</option>
+                {Object.entries(DESIGNATION).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </Select>
 
-          <div className="flex gap-2">
-            <Input name="from" type="number" placeholder="From year" min={1948} max={2100} defaultValue={sp.from} aria-label="Enrolled from year" />
-            <Input name="to" type="number" placeholder="To year" min={1948} max={2100} defaultValue={sp.to} aria-label="Enrolled to year" />
-          </div>
+              <Select name="status" defaultValue={sp.status ?? ''} aria-label="Membership status">
+                <option value="">All statuses</option>
+                {['active', 'life', 'suspended', 'retired', 'deceased'].map((s) => (
+                  <option key={s} value={s} className="capitalize">{s}</option>
+                ))}
+              </Select>
 
-          <Select name="sort" defaultValue={sp.sort ?? 'name'} aria-label="Sort by">
-            <option value="name">Sort: Name (A–Z)</option>
-            <option value="year">Sort: Enrolment year</option>
-            <option value="recent">Sort: Recently joined</option>
-          </Select>
+              <div className="flex gap-2">
+                <Input name="from" type="number" placeholder="From year" min={1948} max={2100} defaultValue={sp.from} aria-label="Enrolled from year" />
+                <Input name="to" type="number" placeholder="To year" min={1948} max={2100} defaultValue={sp.to} aria-label="Enrolled to year" />
+              </div>
 
-          <div className="flex gap-2">
-            <button type="submit" className="h-10 flex-1 rounded-lg bg-brand-600 px-4.5 text-[13px] font-semibold text-white hover:bg-brand-700">
+              <Select name="sort" defaultValue={sp.sort ?? 'name'} aria-label="Sort by">
+                <option value="name">Sort: Name (A–Z)</option>
+                <option value="year">Sort: Enrolment year</option>
+                <option value="recent">Sort: Recently joined</option>
+              </Select>
+            </div>
+          </details>
+
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-4">
+            <button type="submit" className="pressable h-10 flex-1 rounded-full bg-solid px-4.5 text-[13px] font-semibold text-on-solid hover:opacity-88">
               Apply
             </button>
-            <Link href="/directory" className="flex h-10 items-center rounded border border-paper-edge px-3 text-sm text-ink-600 hover:bg-paper-sunk">
+            <Link href="/directory" className="pressable flex h-10 items-center rounded-full bg-paper-sunk px-4 text-[13px] font-semibold text-ink-700">
               Clear
             </Link>
           </div>
@@ -133,7 +151,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
             <Link
               key={label}
               href={{ pathname: '/directory', query: { ...sp, view: v || undefined } }}
-              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-brand-600 text-white' : 'text-ink-500 hover:bg-paper-sunk'}`}
+              className={`rounded-lg px-3 py-1 text-[12px] font-semibold ${(sp.view ?? '') === v ? 'bg-solid text-on-solid' : 'text-ink-500 hover:bg-paper-sunk'}`}
             >
               {label}
             </Link>
